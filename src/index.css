@@ -11,6 +11,14 @@
   font-variation-settings: "wdth" 100;
 }
 
+#root {
+  padding: 1rem !important;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
 h1 {
   font-family: "Sour Gummy", sans-serif;
 }
