@@ -9,15 +9,15 @@ export default {
       keyframes: {
         pulse: {
           "0%": {
-            opacity: "0.2",
+            opacity: "0.18",
             transform: "scale(4) rotate(0deg)",
           },
           "50%": {
-            opacity: "0.35",
+            opacity: "0.3",
             transform: "scale(2) rotate(180deg)",
           },
           "100%": {
-            opacity: "0.2",
+            opacity: "0.18",
             transform: "scale(4) rotate(360deg)",
           },
         },
@@ -28,7 +28,7 @@ export default {
         },
       },
       animation: {
-        "pulse-slow": "pulse 50s linear infinite",
+        "pulse-slow": "pulse 55s linear infinite",
         shine: "shine 5s ease-in-out infinite",
       },
     },
