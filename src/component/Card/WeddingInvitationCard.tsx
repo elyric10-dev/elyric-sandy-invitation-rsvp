@@ -44,53 +44,53 @@ export const WeddingInvitationCard = ({
   const gold = "#d4bc68";
 
   return (
-    <div className="relative w-full max-w-md overflow-hidden rounded-lg shadow-lg">
-      {/* SMOKE */}
-      {/* ANIMATION SPIN */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.15] animate-pulse-slow">
+    <div className="relative w-full max-w-lg overflow-hidden rounded-lg shadow-lg">
+      {/* Smoke Background */}
+      <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+        <Image src={smoke} alt="Smoke" className="object-cover" />
+      </div>
+      <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+        <Image src={smoke} alt="Smoke" className="object-cover" />
+      </div>
+
+      {/* Top Border */}
+      <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
         <Image
-          src={smoke}
-          alt="Smoke"
-          preview={false}
-          className="w-full h-full object-cover"
+          src={flowerBorderTop}
+          alt="Top Flower Border"
+          className="object-cover"
         />
       </div>
 
-      {/* BORDER */}
-      {/* TOP */}
-      <div className="absolute top-0 w-full h-full pointer-events-none opacity-40">
-        <Image
-          src={flowerBorderTop}
-          alt="Flower border"
-          preview={false}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      {/* border X */}
-      <div className="absolute top-0 w-full h-full pointer-events-none opacity-40">
+      {/* Horizontal Borders */}
+      <div className="absolute top-0 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderX}
-          alt="Flower border"
-          preview={false}
-          className="w-full h-full object-cover"
+          alt="Horizontal Border"
+          className="object-cover"
         />
       </div>
-      {/* border X */}
-      <div className="absolute top-[25rem] w-full h-full pointer-events-none opacity-40">
+      <div className="absolute top-1/4 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderX}
-          alt="Flower border"
-          preview={false}
-          className="w-full h-full object-cover"
+          alt="Horizontal Border"
+          className="object-cover"
         />
       </div>
-      {/* BOTTOM */}
-      <div className="absolute top-[22rem] w-full h-full pointer-events-none opacity-40">
+      <div className="absolute top-1/2 w-full pointer-events-none opacity-40">
+        <Image
+          src={flowerBorderX}
+          alt="Horizontal Border"
+          className="object-cover"
+        />
+      </div>
+
+      {/* Bottom Border */}
+      <div className="absolute -bottom-1 left-0 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderBottom}
-          alt="Flower border"
-          preview={false}
-          className="w-full h-full object-cover"
+          alt="Bottom Flower Border"
+          className="object-cover"
         />
       </div>
 

@@ -10,15 +10,15 @@ export default {
         pulse: {
           "0%": {
             opacity: "0.2",
-            transform: "scale(5) rotate(0deg)",
+            transform: "scale(4) rotate(0deg)",
           },
           "50%": {
             opacity: "0.35",
-            transform: "scale(3) rotate(180deg)",
+            transform: "scale(2) rotate(180deg)",
           },
           "100%": {
             opacity: "0.2",
-            transform: "scale(5) rotate(360deg)",
+            transform: "scale(4) rotate(360deg)",
           },
         },
         shine: {
@@ -28,7 +28,7 @@ export default {
         },
       },
       animation: {
-        "pulse-slow": "pulse 55s linear infinite",
+        "pulse-slow": "pulse 50s linear infinite",
         shine: "shine 5s ease-in-out infinite",
       },
     },

@@ -58,7 +58,7 @@ const RSVPPage = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-8 p-4">
+    <div className="w-full flex flex-col items-center gap-8">
       {/* INVITATION */}
       <WeddingInvitationCard
         headerLogoUrl={esLogo}
