@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         tallowSansTC: ["TallowSansTC", "TallowTC"],
+        bernaillo: ["Bernaillo"],
       },
       keyframes: {
         pulse: {

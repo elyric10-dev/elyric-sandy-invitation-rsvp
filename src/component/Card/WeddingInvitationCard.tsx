@@ -4,13 +4,14 @@ import flowerBorderTop from "../../assets/rsvp/border/border-t.png";
 import flowerBorderX from "../../assets/rsvp/border/border-x.png";
 import flowerBorderBottom from "../../assets/rsvp/border/border-b.png";
 import smoke from "../../assets/rsvp/smoke.png";
+import { useEffect, useState } from "react";
+import { getInvitationData } from "../../services/invitationService";
 
 interface IWeddingInvitationCardProps {
+  invitationCode: string;
   headerLogoUrl?: any;
-  groomNameFirstLetter: string;
-  groomRestName: string;
-  brideNameFirstLetter: string;
-  brideRestName: string;
+  groomName: string;
+  brideName: string;
   eventMonth: string;
   eventDate: string;
   eventYear: string;
@@ -23,11 +24,10 @@ interface IWeddingInvitationCardProps {
 }
 
 export const WeddingInvitationCard = ({
+  invitationCode,
   headerLogoUrl,
-  groomNameFirstLetter,
-  brideNameFirstLetter,
-  groomRestName,
-  brideRestName,
+  groomName,
+  brideName,
   eventMonth,
   eventDate,
   eventYear,
@@ -38,13 +38,33 @@ export const WeddingInvitationCard = ({
   eventAddress,
   coupleHashtag,
 }: IWeddingInvitationCardProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [invitationData, setInvitationData] = useState<any>([]);
+
   const lighterBlack = "#4e4449";
   const darkerLilac = "#7b629a";
   const lilac = "#c8a2c8";
   const gold = "#d4bc68";
 
+  useEffect(() => {
+    const fetchInvitationData = async () => {
+      try {
+        const response = await getInvitationData(invitationCode);
+        console.log("response", response);
+        setInvitationData(response.data.invitation.guests);
+      } catch (error) {
+        console.error("Error fetching invitation data:", error);
+      }
+    };
+    fetchInvitationData();
+  }, [invitationCode]);
+
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
+
   return (
-    <div className="relative w-full max-w-lg overflow-hidden rounded-lg shadow-lg">
+    <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-lg shadow-lg">
       {/* Smoke Background */}
       <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
         <Image src={smoke} alt="Smoke" className="object-cover" />
@@ -57,6 +77,7 @@ export const WeddingInvitationCard = ({
       <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderTop}
+          onLoad={handleImageLoad}
           alt="Top Flower Border"
           className="object-cover"
         />
@@ -94,6 +115,7 @@ export const WeddingInvitationCard = ({
         />
       </div>
 
+      {/* INVITATION CARD CONTENT */}
       <div className="flex flex-col items-center gap-1">
         <div className="flex flex-col items-center">
           <Image
@@ -128,13 +150,13 @@ export const WeddingInvitationCard = ({
             style={{ color: lilac }}
           >
             <h1 className="groom-bride-name text-5xl">
-              <span className="font-semibold">{groomNameFirstLetter}</span>
-              <span className="">{groomRestName}</span>
+              <span className="font-semibold">{groomName[0]}</span>
+              <span className="">{groomName.slice(1)}</span>
             </h1>
             <h2 className="groom-bride-name text-5xl">&</h2>
             <h1 className="groom-bride-name text-5xl">
-              <span className="font-semibold">{brideNameFirstLetter}</span>
-              <span className="">{brideRestName}</span>
+              <span className="font-semibold">{brideName[0]}</span>
+              <span className="">{brideName.slice(1)}</span>
             </h1>
           </div>
         </div>

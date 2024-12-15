@@ -24,6 +24,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "bernaillo";
+  src: url("./assets/fonts/Bernaillo/Bernaillo.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .groom-bride-name {
   font-family: "Parisienne", cursive;
   font-weight: 400;
@@ -68,4 +75,124 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: #c8a2c8 #f5e8d9;
+}
+
+/* WHAT TO WEAR CARD ANIMATION */
+
+/* CARD 1: HARD COPY PICTURE */
+.picture1-animation {
+  transition: z-index 0.5s ease-in-out;
+  z-index: 1;
+}
+
+.picture1-animation:hover {
+  z-index: 10;
+  animation: pull-up-card-1 0.5s forwards;
+}
+
+.picture1-animation:not(:hover) {
+  animation: put-up-card-1 0.6s forwards;
+}
+
+@keyframes pull-up-card-1 {
+  0% {
+    transform: translateX(-50%) translateY(-0%) rotate(-12deg) scale(1.4);
+  }
+  50% {
+    transform: translateX(-100%) translateY(-100%) rotate(12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(0%) translateY(0%) scale(2.6);
+  }
+}
+
+@keyframes put-up-card-1 {
+  0% {
+    transform: translateX(0%) translateY(0%) scale(2.6);
+  }
+  50% {
+    transform: translateX(-100%) translateY(-100%) rotate(12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-0%) rotate(-12deg) scale(1.4);
+  }
+}
+
+/* CARD 2: HARD COPY PICTURE */
+.picture2-animation {
+  transition: z-index 0.5s ease-in-out;
+  z-index: 2;
+}
+
+.picture2-animation:hover {
+  z-index: 10;
+  animation: pull-up-card-2 0.5s forwards;
+}
+
+.picture2-animation:not(:hover) {
+  animation: put-up-card-2 0.6s forwards;
+}
+
+@keyframes pull-up-card-2 {
+  0% {
+    transform: translateX(50%) translateY(-0%) rotate(12deg) scale(1.4);
+  }
+  50% {
+    transform: translateX(100%) translateY(-100%) rotate(-12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(0%) translateY(0%) scale(2.6);
+  }
+}
+
+@keyframes put-up-card-2 {
+  0% {
+    transform: translateX(0%) translateY(0%) scale(2.6);
+  }
+  50% {
+    transform: translateX(100%) translateY(-100%) rotate(-12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(50%) translateY(-0%) rotate(12deg) scale(1.4);
+  }
+}
+
+/* CARD 3: HARD COPY PICTURE */
+
+.picture3-animation {
+  transition: z-index 0.5s ease-in-out;
+  z-index: 3;
+}
+
+.picture3-animation:hover {
+  z-index: 10;
+  animation: pull-up-card-3 0.5s forwards;
+}
+
+.picture3-animation:not(:hover) {
+  animation: put-up-card-3 0.6s forwards;
+}
+
+@keyframes pull-up-card-3 {
+  0% {
+    transform: translateX(-50%) translateY(70%) rotate(12deg) scale(1.4);
+  }
+  50% {
+    transform: translateX(-100%) translateY(70%) rotate(-12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(-0%) translateY(0%) scale(2.6);
+  }
+}
+
+@keyframes put-up-card-3 {
+  0% {
+    transform: translateX(-0%) translateY(0%) scale(2.6);
+  }
+  50% {
+    transform: translateX(-100%) translateY(70%) rotate(-12deg) scale(1.4);
+  }
+  100% {
+    transform: translateX(-50%) translateY(70%) rotate(12deg) scale(1.4);
+  }
 }

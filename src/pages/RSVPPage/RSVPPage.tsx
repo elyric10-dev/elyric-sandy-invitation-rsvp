@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Card, List, message, Image } from "antd";
 import { WeddingInvitationCard } from "../../component/Card/WeddingInvitationCard";
-import esLogo from "../../assets/rsvp/RSVP_logo.png";
+import { WhatToWearSection } from "./Sections/WhatToWearSection";
+import { WeddingInvitationSection } from "./Sections/WeddingInvitationSection";
+import { RSVPSection } from "./Sections/RSVPSection";
 
 const api = axios.create({
   baseURL: "https://api-rsvp.elyricm.cloud",
@@ -18,12 +20,12 @@ const RSVPPage = () => {
   const { invitationCode } = useParams();
   const [seatCount, setSeatCount] = useState(0);
   const [guests, setGuests] = useState<any>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const response = await api.get(`/api/invitation/${invitationCode}`);
 
         console.log("response", response);
@@ -33,7 +35,7 @@ const RSVPPage = () => {
         message.error(error.response.data.error);
         window.location.href = "/error";
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -42,7 +44,7 @@ const RSVPPage = () => {
 
   const submitRSVP = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await api.post(`/api/invite/rsvp/${invitationCode}`, {
         is_attending: true,
         party_members: guests,
@@ -53,31 +55,28 @@ const RSVPPage = () => {
     } catch (error: any) {
       message.error(error.response.data.error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className="w-full flex flex-col items-center gap-8">
-      {/* INVITATION */}
-      <WeddingInvitationCard
-        headerLogoUrl={esLogo}
-        groomNameFirstLetter="E"
-        groomRestName="lyric"
-        brideNameFirstLetter="S"
-        brideRestName="andy"
-        eventMonth="March"
-        eventDate="01"
-        eventYear="2025"
-        eventDay="Saturday"
-        eventTime="04:00PM"
-        eventVenue="Crowne Garden Hotel"
-        eventVenueLocated="3rd floor Grand Ballroom"
-        eventAddress="Salinas Dr, Cebu City, 6000 Cebu"
-        coupleHashtag="#ifinELYfoundmySANshine"
-      />
-    </div>
-  );
+  if (isLoading) {
+    return (
+      <h1 className="fixed inset-0 z-50 flex justify-center">Loading...</h1>
+    );
+  } else {
+    return (
+      <div className="w-screen flex flex-col items-center">
+        {/* WEDDING INVITATION */}
+        {/* <WeddingInvitationSection /> */}
+
+        {/* WHAT TO WEAR */}
+        {/* <WhatToWearSection /> */}
+
+        {/* RVSP */}
+        <RSVPSection />
+      </div>
+    );
+  }
 };
 
 export default RSVPPage;
