@@ -1,4 +1,4 @@
-import { Image } from "antd";
+import { Image, Modal } from "antd";
 import flowerBorderTop from "../../assets/rsvp/border/border-t.png";
 import flowerBorderX from "../../assets/rsvp/border/border-x.png";
 import flowerBorderBottom from "../../assets/rsvp/border/border-b.png";
@@ -14,17 +14,15 @@ import {
 interface IWeddingInvitationCardProps {
   invitationCode: string;
   headerLogoUrl?: any;
-  coupleHashtag: string;
 }
 
 export const RSVPCard = ({
   invitationCode,
   headerLogoUrl,
-  coupleHashtag,
 }: IWeddingInvitationCardProps) => {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [invitationData, setInvitationData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [seatCount, setSeatCount] = useState(0);
 
   const lighterBlack = "#4e4449";
   const darkerLilac = "#7b629a";
@@ -36,18 +34,15 @@ export const RSVPCard = ({
     const fetchInvitationData = async () => {
       try {
         const response = await getInvitationData(invitationCode);
-        console.log("response", response.invitation.guests);
+        console.log("response", response);
         setInvitationData(response.invitation.guests);
+        setSeatCount(response.invitation.seat_count);
       } catch (error) {
         console.error("Error fetching invitation data:", error);
       }
     };
     fetchInvitationData();
   }, [invitationCode]);
-
-  const handleImageLoad = () => {
-    setIsLoaded(true);
-  };
 
   const handleIsAttendingClick = (id: number, isAttending: boolean) => {
     const guest = invitationData.find((guest: any) => guest.id === id);
@@ -82,6 +77,21 @@ export const RSVPCard = ({
 
       const updatedGuests = response.invitation.guests;
       setInvitationData(updatedGuests);
+
+      Modal.success({
+        content: "Your RSVP has been successfully submitted!",
+        style: {
+          top: "50%", // Center vertically
+          transform: "translateY(-50%)", // Adjust for half the height of the modal
+        },
+        onOk() {
+          console.log("Forward to Gatepass with QR");
+          window.open(
+            "https://elyric-sandy.elyricm.cloud/create-invitation",
+            "_blank"
+          );
+        },
+      });
     } catch (error) {
       console.error("Error updating invitation data:", error);
     } finally {
@@ -103,7 +113,6 @@ export const RSVPCard = ({
       <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderTop}
-          onLoad={handleImageLoad}
           alt="Top Flower Border"
           className="object-cover"
         />
@@ -182,9 +191,11 @@ export const RSVPCard = ({
                 className="text-3xl font-medium"
                 style={{ color: darkerLilac, lineHeight: 0 }}
               >
-                3
+                {seatCount}
               </span>
-              <span className="text-sm font-medium">SEATS IN YOUR HONOR.</span>
+              <span className="text-sm font-medium">
+                {seatCount > 1 ? "SEATS" : "SEAT"} IN YOUR HONOR.
+              </span>
             </span>
           </div>
 
@@ -212,9 +223,8 @@ export const RSVPCard = ({
             className="montaser-arabic !font-semibold text-2xl"
             style={{ color: lighterBlack }}
           >
-            GUEST NAMES
+            GUEST {seatCount > 1 ? "NAMES" : "NAME"}
           </h2>
-
           <div className="w-full flex flex-col items-center gap-2">
             {invitationData.map((guest: any) => (
               <div key={guest.id} className="w-full h-full">
@@ -252,9 +262,9 @@ export const RSVPCard = ({
                         <h1 className="text-green-600">Attending</h1>
                       )}
                       {!guest.is_attending && (
-                        <div className="flex flex-col items-center">
-                          <h1 className="text-red-600">Not</h1>
-                          <h1 className="text-red-600">Attending</h1>
+                        <div className="flex flex-col items-center leading-[14px]">
+                          <h1 className="text-red-600">Can't</h1>
+                          <h1 className="text-red-600">Attend</h1>
                         </div>
                       )}
                       <div
@@ -273,25 +283,6 @@ export const RSVPCard = ({
               </div>
             ))}
           </div>
-
-          <button
-            className="bg-[#f5f5dc] text-[#7b629a] montaser-arabic !font-semibold mt-8 py-2 px-8 rounded shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] hover:shadow-[2px_2px_5px_-3px_rgba(0,0,0,0.4)] transition duration-100 active:scale-110 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] disabled:bg-gray-300"
-            onClick={handleSubmitRSVP}
-            // If there is null in the guest list is_attend, disable the button
-            disabled={
-              isLoading ||
-              invitationData.some((guest: any) => guest.is_attending === null)
-            }
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
-              </div>
-            ) : (
-              "Send RSVP"
-            )}
-          </button>
-
           {/* RSVP Details */}
           <div
             className="mt-16 px-8 py-4 flex flex-col items-center border-2 rounded-lg"
@@ -327,8 +318,10 @@ export const RSVPCard = ({
                     <div className="w-7 h-7 flex items-center justify-center bg-green-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-default">
                       <FaSmile className="text-green-200" size={28} />
                     </div>
-                    - to{" "}
-                    <span className="font-semibold text-green-600">ATTEND</span>
+                    {" - "}
+                    <span className="font-semibold text-green-600">
+                      Attending
+                    </span>
                   </div>
                 </div>
 
@@ -339,24 +332,46 @@ export const RSVPCard = ({
                   >
                     <div className="w-7 h-7 flex items-center justify-center bg-red-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-default">
                       <FaFrown className="text-red-200" size={28} />
-                    </div>{" "}
-                    - to{" "}
+                    </div>
+                    {" - "}
                     <span className="font-semibold text-red-600">
-                      NOT ATTEND
+                      Not Attending
                     </span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <button
+            className="bg-[#f5f5dc] text-[#7b629a] montaser-arabic !font-semibold mt-8 py-2 px-8 rounded shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] hover:shadow-[2px_2px_5px_-3px_rgba(0,0,0,0.4)] transition duration-100 active:scale-110 disabled:text-gray-300 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] disabled:bg-gray-300"
+            onClick={handleSubmitRSVP}
+            // If there is null in the guest list is_attend, disable the button
+            disabled={
+              isLoading ||
+              invitationData.some((guest: any) => guest.is_attending === null)
+            }
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+              </div>
+            ) : (
+              <span
+                style={{
+                  color: invitationData.some(
+                    (guest: any) => guest.is_attending === null
+                  )
+                    ? "#aaaaaa"
+                    : darkerLilac,
+                }}
+              >
+                Submit RSVP
+              </span>
+            )}
+          </button>
         </div>
 
-        <div className="relative mt-16 mb-32 py-2 px-3 bg-[#7b629a]/70 rounded overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent transform translate-x-[-150%] animate-shine"></div>
-          <h2 className="text-lg lato-regular-italic text-gray-100 cursor-default relative z-10">
-            {coupleHashtag}
-          </h2>
-        </div>
+        <div className="relative mb-32 rounded overflow-hidden"></div>
       </div>
     </div>
   );

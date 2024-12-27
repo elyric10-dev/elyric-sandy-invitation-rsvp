@@ -10,15 +10,15 @@ export default {
       keyframes: {
         pulse: {
           "0%": {
-            opacity: "0.18",
+            opacity: "0.10",
             transform: "scale(4) rotate(0deg)",
           },
           "50%": {
-            opacity: "0.3",
+            opacity: "0.22",
             transform: "scale(2) rotate(180deg)",
           },
           "100%": {
-            opacity: "0.18",
+            opacity: "0.10",
             transform: "scale(4) rotate(360deg)",
           },
         },

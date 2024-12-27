@@ -9,11 +9,7 @@ export const RSVPSection = () => {
   const code = invitationCode || "";
   return (
     <>
-      <RSVPCard
-        invitationCode={code}
-        headerLogoUrl={esLogo}
-        coupleHashtag="#ifinELYfoundmySANshine"
-      />
+      <RSVPCard invitationCode={code} headerLogoUrl={esLogo} />
     </>
   );
 };

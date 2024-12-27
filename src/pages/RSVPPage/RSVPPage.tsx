@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Button, Card, List, message, Image } from "antd";
-import { WeddingInvitationCard } from "../../component/Card/WeddingInvitationCard";
+import { message } from "antd";
 import { WhatToWearSection } from "./Sections/WhatToWearSection";
 import { WeddingInvitationSection } from "./Sections/WeddingInvitationSection";
 import { RSVPSection } from "./Sections/RSVPSection";
+import lilac_beige_orbs_bg from "../../assets/rsvp/lilac_beige_orbs_bg.jpg";
 
 const api = axios.create({
   baseURL: "https://api-rsvp.elyricm.cloud",
@@ -18,8 +18,6 @@ const api = axios.create({
 
 const RSVPPage = () => {
   const { invitationCode } = useParams();
-  const [seatCount, setSeatCount] = useState(0);
-  const [guests, setGuests] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -29,8 +27,6 @@ const RSVPPage = () => {
         const response = await api.get(`/api/invitation/${invitationCode}`);
 
         console.log("response", response);
-        setGuests([...response.data.invitation.guests]);
-        setSeatCount(response.data.invitation.seat_count);
       } catch (error: any) {
         message.error(error.response.data.error);
         window.location.href = "/error";
@@ -42,23 +38,6 @@ const RSVPPage = () => {
     fetchData();
   }, [invitationCode]);
 
-  const submitRSVP = async () => {
-    try {
-      setIsLoading(true);
-      const response = await api.post(`/api/invite/rsvp/${invitationCode}`, {
-        is_attending: true,
-        party_members: guests,
-      });
-
-      console.log("response", response);
-      message.success("RSVP submitted successfully!");
-    } catch (error: any) {
-      message.error(error.response.data.error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   if (isLoading) {
     return (
       <h1 className="fixed inset-0 z-50 flex justify-center">Loading...</h1>
@@ -66,11 +45,19 @@ const RSVPPage = () => {
   } else {
     return (
       <div className="w-screen flex flex-col items-center">
+        <div className="fixed inset-0 -z-10 opacity-25">
+          <img
+            src={lilac_beige_orbs_bg}
+            alt="background"
+            className="w-screen h-screen object-cover blur-sm"
+          />
+        </div>
+
         {/* WEDDING INVITATION */}
-        {/* <WeddingInvitationSection /> */}
+        <WeddingInvitationSection />
 
         {/* WHAT TO WEAR */}
-        {/* <WhatToWearSection /> */}
+        <WhatToWearSection />
 
         {/* RVSP */}
         <RSVPSection />
