@@ -45,7 +45,7 @@ const RSVPPage = () => {
   } else {
     return (
       <div className="w-screen flex flex-col items-center">
-        <div className="fixed inset-0 -z-10 opacity-25">
+        <div className="fixed inset-0 -z-10 opacity-20">
           <img
             src={lilac_beige_orbs_bg}
             alt="background"

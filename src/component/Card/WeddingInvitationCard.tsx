@@ -4,11 +4,8 @@ import flowerBorderTop from "../../assets/rsvp/border/border-t.png";
 import flowerBorderX from "../../assets/rsvp/border/border-x.png";
 import flowerBorderBottom from "../../assets/rsvp/border/border-b.png";
 import smoke from "../../assets/rsvp/smoke.png";
-import { useEffect, useState } from "react";
-import { getInvitationData } from "../../services/invitationService";
 
 interface IWeddingInvitationCardProps {
-  invitationCode: string;
   headerLogoUrl?: any;
   groomName: string;
   brideName: string;
@@ -24,7 +21,6 @@ interface IWeddingInvitationCardProps {
 }
 
 export const WeddingInvitationCard = ({
-  invitationCode,
   headerLogoUrl,
   groomName,
   brideName,
@@ -38,30 +34,10 @@ export const WeddingInvitationCard = ({
   eventAddress,
   coupleHashtag,
 }: IWeddingInvitationCardProps) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [invitationData, setInvitationData] = useState<any>([]);
-
   const lighterBlack = "#4e4449";
   const darkerLilac = "#7b629a";
   const lilac = "#c8a2c8";
   const gold = "#d4bc68";
-
-  useEffect(() => {
-    const fetchInvitationData = async () => {
-      try {
-        const response = await getInvitationData(invitationCode);
-        console.log("response", response);
-        setInvitationData(response.data.invitation.guests);
-      } catch (error) {
-        console.error("Error fetching invitation data:", error);
-      }
-    };
-    fetchInvitationData();
-  }, [invitationCode]);
-
-  const handleImageLoad = () => {
-    setIsLoaded(true);
-  };
 
   return (
     <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-lg shadow-lg">
@@ -77,7 +53,6 @@ export const WeddingInvitationCard = ({
       <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
         <Image
           src={flowerBorderTop}
-          onLoad={handleImageLoad}
           alt="Top Flower Border"
           className="object-cover"
         />
@@ -147,7 +122,10 @@ export const WeddingInvitationCard = ({
           />
           <div
             className="flex flex-col items-center justify-center"
-            style={{ color: lilac }}
+            style={{
+              color: lilac,
+              textShadow: `1.5px 3px 5px rgba(200,162,200,0.5)`,
+            }}
           >
             <h1 className="groom-bride-name text-5xl">
               <span className="font-semibold">{groomName[0]}</span>
@@ -174,7 +152,7 @@ export const WeddingInvitationCard = ({
           </div>
           <div className="flex flex-col items-center gap-2 montaser-arabic text-2xl">
             <h3 className="font-semibold">{eventMonth}</h3>
-            <h3 className="font-[600] text-5xl" style={{ color: darkerLilac }}>
+            <h3 className="font-[600] text-5xl" style={{ color: lilac }}>
               {eventDate}
             </h3>
             <h3 className="font-semibold">{eventYear}</h3>
@@ -199,7 +177,10 @@ export const WeddingInvitationCard = ({
           <h2 className="montaser-arabic">{eventAddress}</h2>
         </div>
 
-        <div className="relative mt-16 mb-32 py-2 px-3 bg-[#7b629a]/70 rounded overflow-hidden">
+        <div
+          className="relative mt-16 mb-32 py-2 px-3 rounded overflow-hidden"
+          style={{ backgroundColor: lilac }}
+        >
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent transform translate-x-[-150%] animate-shine"></div>
           <h2 className="text-lg lato-regular-italic text-gray-100 cursor-default relative z-10">
             {coupleHashtag}

@@ -1,8 +1,4 @@
 import { Image } from "antd";
-import coupleBGImage from "../../../assets/rsvp/what_to_wear/elyric_sandy.jpg";
-import whatToWearBG from "../../../assets/rsvp/what_to_wear/what_wear_bg.png";
-import { HardcopyPicture } from "../../../component/Card/HardcopyPicture";
-import paper_bg from "../../../assets/rsvp/what_to_wear/paper_bg.png";
 import paper_bg_longer from "../../../assets/rsvp/what_to_wear/paper_bg_longer.png";
 import elyric_sandy_with_tape from "../../../assets/rsvp/what_to_wear/elyric_sandy_with_tape.png";
 import what_to_wear_pallete from "../../../assets/rsvp/what_to_wear/what_wear_pallete.png";
@@ -47,7 +43,10 @@ export const WhatToWearSection = () => {
           <div className="w-full flex flex-col">
             <h1
               className={`font-tallowSansTC flex flex-col items-center text-3xl font-semibold scale-y-[1.7] py-3 drop-shadow-sm`}
-              style={{ color: darkerLilac }}
+              style={{
+                color: lilac,
+                textShadow: `2px 1px 2px rgba(200,162,200,0.4)`,
+              }}
             >
               WHAT TO WEAR
             </h1>

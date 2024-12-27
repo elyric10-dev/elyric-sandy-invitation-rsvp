@@ -1,4 +1,3 @@
-import React from "react";
 import { WeddingQRPass } from "../../component/Card/WeddingQRPass";
 import esLogo from "../../assets/rsvp/RSVP_logo.png";
 import { useParams } from "react-router-dom";

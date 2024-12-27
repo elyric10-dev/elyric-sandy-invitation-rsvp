@@ -1,16 +1,11 @@
 import { WeddingInvitationCard } from "../../../component/Card/WeddingInvitationCard";
 import esLogo from "../../../assets/rsvp/RSVP_logo.png";
-import { useParams } from "react-router-dom";
 
 export const WeddingInvitationSection = () => {
-  const params = useParams();
-  const invitationCode = params.invitationCode || "";
-
   return (
     <>
       {/* INVITATION */}
       <WeddingInvitationCard
-        invitationCode={invitationCode}
         headerLogoUrl={esLogo}
         groomName="Elyric"
         brideName="Sandy"
