@@ -44,9 +44,6 @@ const CreateInvitation = () => {
       message.error("Please fill in the required fields");
       return;
     }
-    console.log("number of seats", seatCount);
-    // if(seatCount === 1) return;
-
     const updatedPartyMembers = [...partyMembers, values];
 
     setPartyMembers(updatedPartyMembers);
@@ -78,77 +75,15 @@ const CreateInvitation = () => {
     setPartyMembers(partyMembers.filter((_: any, i: number) => i !== index));
   };
 
-  // const handleValuesChange = () => {
-  //   console.log("seat count change");
-  //   setSeatCount(form.getFieldValue("seatCount"));
-  //   const name = form.getFieldValue("name");
-  //   const middle = form.getFieldValue("middle");
-  //   const lastname = form.getFieldValue("lastname");
-
-  //   const isValidField =
-  //     (name && lastname && seatCount === 1) ||
-  //     (name && lastname && partyMembers.length === seatCount);
-  //   // console.log('isValidField', isValidField)
-  //   // if(seatCount === 1 || seatCount > 1)
-  //   console.log("seat count", seatCount);
-  //   // setPartyMembers([{partyName: name, partyMiddle: middle, partyLastname: lastname}]);
-
-  //   setIsButtonDisabled(!isValidField);
-  // };
-
-  // const createInvitation = async (values: ICreateInvitationValues) => {
-  //   console.log("create invitation");
-  //   try {
-  //     setLoading(true);
-  //     const response = await api.post("/api/invitations", {
-  //       seat_count: values.seatCount,
-  //       is_attending: false,
-  //       party_members: partyMembers,
-  //     });
-
-  //     const link = response.data.invitation.invitation_link;
-  //     setInvitationLink(link);
-
-  //     message.success("Invitation created successfully!");
-  //     form.resetFields();
-  //   } catch (error: any) {
-  //     message.error(
-  //       error.response?.data?.error || "Failed to create invitation"
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleCreateInvitation = async (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // if(seatCount === null) setIsButtonDisabled(true);
-    // try {
-    //   const values = await form.validateFields();
-    //   createInvitation(values);
-    // } catch (error) {
-    //   if (error instanceof Error) {
-    //     message.error(error.message);
-    //   } else {
-    //     message.error("Please fill in all required fields");
-    //   }
-    // }
-
-    // const invitationData = {
-    //   seatCount: seatCount,
-    //   partyMembers: partyMembers,
-    // };
-
-    // console.log("create invitation: ", invitationData);
     try {
       setLoading(true);
       const response = await api.post("/api/invitations", {
         seat_count: seatCount,
         party_members: partyMembers,
       });
-
-      console.log("response", response);
 
       const link = response.data.invitation_link;
       setInvitationLink(link);
@@ -165,7 +100,6 @@ const CreateInvitation = () => {
   };
 
   const handleSetCount = () => {
-    console.log("clicked seat");
     const updatedSeatCount = form.getFieldValue("seatCount");
     setSeatCount(updatedSeatCount);
   };
@@ -263,15 +197,17 @@ const CreateInvitation = () => {
             )}
           />
 
-          <Button
-            type="primary"
-            loading={loading}
-            className="mt-4 shadow-md"
-            onClick={handleCreateInvitation}
-            disabled={seatCount !== partyMembers.length}
-          >
-            Create RSVP Invitation
-          </Button>
+          <div className="w-full flex justify-center">
+            <Button
+              type="primary"
+              loading={loading}
+              className="mt-4 shadow-md"
+              onClick={handleCreateInvitation}
+              disabled={seatCount !== partyMembers.length}
+            >
+              Create RSVP Invitation
+            </Button>
+          </div>
 
           {invitationLink && (
             <Card className="mt-8 shadow-md">

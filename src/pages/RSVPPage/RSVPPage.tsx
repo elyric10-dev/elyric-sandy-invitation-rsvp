@@ -25,8 +25,6 @@ const RSVPPage = () => {
       try {
         setIsLoading(true);
         const response = await api.get(`/api/invitation/${invitationCode}`);
-
-        console.log("response", response);
       } catch (error: any) {
         message.error(error.response.data.error);
         window.location.href = "/error";

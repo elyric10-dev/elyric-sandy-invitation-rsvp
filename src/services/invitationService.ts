@@ -16,6 +16,16 @@ export const getInvitationData = async (invitationCode: string) => {
   }
 };
 
+export const getPassData = async (invitationCode: string) => {
+  try {
+    const response = await api.get(`api/pass/${invitationCode}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching invitation data:", error);
+    throw error;
+  }
+};
+
 export const updateInvitationData = async (
   invitationCode: string,
   data: any

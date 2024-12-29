@@ -34,7 +34,6 @@ export const RSVPCard = ({
     const fetchInvitationData = async () => {
       try {
         const response = await getInvitationData(invitationCode);
-        console.log("response", response);
         setInvitationData(response.invitation.guests);
         setSeatCount(response.invitation.seat_count);
       } catch (error) {
@@ -64,34 +63,43 @@ export const RSVPCard = ({
 
   const handleSubmitRSVP = async () => {
     setIsLoading(true);
-    console.log("Data to pass", invitationData);
 
     try {
       const data = {
         party_members: invitationData,
       };
-      console.log("data", data);
       const response = await updateInvitationData(invitationCode, data);
-
-      console.log(response);
 
       const updatedGuests = response.invitation.guests;
       setInvitationData(updatedGuests);
+      const hasAttendingGuest = invitationData.some(
+        (guest: any) => guest.is_attending
+      );
 
-      Modal.success({
-        content: "Your RSVP has been successfully submitted!",
-        style: {
-          top: "50%", // Center vertically
-          transform: "translateY(-50%)", // Adjust for half the height of the modal
-        },
-        onOk() {
-          console.log("Forward to Gatepass with QR");
-          window.open(
-            "https://elyric-sandy.elyricm.cloud/create-invitation",
-            "_blank"
-          );
-        },
-      });
+      if (hasAttendingGuest) {
+        Modal.success({
+          content: "Submitted! Thank you for your response! 🤗",
+          style: {
+            top: "50%",
+            transform: "translateY(-50%)",
+          },
+          onOk() {
+            window.open(
+              `https://elyric-sandy.elyricm.cloud/pass/${invitationCode}`,
+              "_blank"
+            );
+          },
+        });
+      } else {
+        Modal.warning({
+          content:
+            "Response submitted! We are sorry to hear that you can't attend. I hope you will change your mind before February 02, 2025. Thank you! 🥺",
+          style: {
+            top: "50%",
+            transform: "translateY(-50%)",
+          },
+        });
+      }
     } catch (error) {
       console.error("Error updating invitation data:", error);
     } finally {
@@ -213,7 +221,7 @@ export const RSVPCard = ({
               className="text-xl lato-regular-italic font-semibold cursor-default relative z-10"
               style={{ color: darkerLilac }}
             >
-              FEBRUARY 03, 2025
+              FEBRUARY 02, 2025
             </h2>
           </div>
         </div>
@@ -229,7 +237,7 @@ export const RSVPCard = ({
             {invitationData.map((guest: any) => (
               <div key={guest.id} className="w-full h-full">
                 <div
-                  className="flex items-end justify-center gap-4 border-b-2 mx-2"
+                  className="flex items-end justify-between gap-4 border-b-2 mx-12"
                   style={{ borderColor: gold }}
                 >
                   <h3
