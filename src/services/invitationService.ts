@@ -1,14 +1,8 @@
-import axios from "axios";
-const api = axios.create({
-  baseURL: "https://api-rsvp.elyricm.cloud/",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import { api } from "./api";
 
 export const getInvitationData = async (invitationCode: string) => {
   try {
-    const response = await api.get(`api/invitation/${invitationCode}`);
+    const response = await api.get(`invitation/${invitationCode}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching invitation data:", error);
@@ -18,7 +12,7 @@ export const getInvitationData = async (invitationCode: string) => {
 
 export const getPassData = async (invitationCode: string) => {
   try {
-    const response = await api.get(`api/pass/${invitationCode}`);
+    const response = await api.get(`pass/${invitationCode}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching invitation data:", error);
@@ -32,10 +26,7 @@ export const updateInvitationData = async (
 ) => {
   try {
     console.log("updateInvitationData invitation data:", data);
-    const response = await api.post(
-      `api/invitation/rsvp/${invitationCode}`,
-      data
-    );
+    const response = await api.post(`invitation/rsvp/${invitationCode}`, data);
     return response.data;
   } catch (error) {
     console.error("Error updating invitation data:", error);

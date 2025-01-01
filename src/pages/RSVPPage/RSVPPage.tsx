@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { message } from "antd";
 import { WhatToWearSection } from "./Sections/WhatToWearSection";
 import { WeddingInvitationSection } from "./Sections/WeddingInvitationSection";
 import { RSVPSection } from "./Sections/RSVPSection";
 import lilac_beige_orbs_bg from "../../assets/rsvp/lilac_beige_orbs_bg.jpg";
-
-const api = axios.create({
-  baseURL: "https://api-rsvp.elyricm.cloud",
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+import { api } from "../../services/api";
 
 const RSVPPage = () => {
   const { invitationCode } = useParams();
@@ -24,7 +15,7 @@ const RSVPPage = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/api/invitation/${invitationCode}`);
+        const response = await api.get(`/invitation/${invitationCode}`);
       } catch (error: any) {
         message.error(error.response.data.error);
         window.location.href = "/error";

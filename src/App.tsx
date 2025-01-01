@@ -6,6 +6,7 @@ import CreateInvitation from "./pages/CreateInvitation";
 import ErrorPage from "./pages/ErrorPage";
 import { PassPage } from "./pages/PassPage";
 import MobileOnlyWrapper from "./component/Wrapper/MobileOnlyWrapper";
+import { AdminPage } from "./pages/AdminPage/AdminPage";
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
             <Route path="/create-invitation" element={<CreateInvitation />} />
             <Route path="/rsvp/:invitationCode" element={<RSVPPage />} />
             <Route path="/pass/:invitationCode" element={<PassPage />} />
+
+            {/* ADMIN PAGE */}
+            <Route path="/admin/seat-plan" element={<AdminPage />} />
 
             {/* // ERROR PAGE */}
             <Route path="/error" element={<ErrorPage />} />
