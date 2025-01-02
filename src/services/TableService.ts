@@ -6,6 +6,16 @@ interface tableDataType {
   status: string;
 }
 
+export const getAllTableGuests = async (tableId: number) => {
+  try {
+    const response = await api.get(`admin/seat-plan/guests/${tableId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching guests by table id:", error);
+    throw error;
+  }
+};
+
 export const getTableData = async () => {
   try {
     const response = await api.get("admin/seat-plan");

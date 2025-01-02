@@ -4,7 +4,11 @@ import type { TableProps } from "antd";
 import { GuestDataType, TableGuests } from "./TableGuests";
 import { AllAttendingGuests } from "./AllAttendingGuests";
 import CreateTable from "./CreateTable";
-import { deleteTable, getTableData } from "../../../services/TableService";
+import {
+  deleteTable,
+  getAllTableGuests,
+  getTableData,
+} from "../../../services/TableService";
 
 interface TableDataType {
   id?: number;
@@ -14,29 +18,34 @@ interface TableDataType {
   capacity: number;
 }
 
-const guestData: GuestDataType[] = [
-  {
-    key: "1",
-    name: "Elyric",
-    middle: "Abera",
-    lastname: "Manatad",
-    status: "Not arrive",
-  },
-  {
-    key: "2",
-    name: "Sandy",
-    middle: "Mayol",
-    lastname: "Dupal",
-    status: "Arrived",
-  },
-  {
-    key: "3",
-    name: "Elysa",
-    middle: "Mayol",
-    lastname: "Manatad",
-    status: "Waiting",
-  },
-];
+interface GuestsDataType {
+  row: TableDataType;
+  guests: GuestDataType[];
+}
+
+// const guestData: GuestDataType[] = [
+//   {
+//     key: "1",
+//     name: "Elyric",
+//     middle: "Abera",
+//     lastname: "Manatad",
+//     status: "Not arrive",
+//   },
+//   {
+//     key: "2",
+//     name: "Sandy",
+//     middle: "Mayol",
+//     lastname: "Dupal",
+//     status: "Arrived",
+//   },
+//   {
+//     key: "3",
+//     name: "Elysa",
+//     middle: "Mayol",
+//     lastname: "Manatad",
+//     status: "Waiting",
+//   },
+// ];
 
 export const TableLists = () => {
   const [tableData, setTableData] = useState<TableDataType[]>([]);
@@ -45,6 +54,7 @@ export const TableLists = () => {
     useState<TableDataType | null>(null);
   const [isCreateTableModalOpen, setIsCreateTableModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [guestData, setGuestData] = useState<GuestDataType[]>([]);
 
   const columns: TableProps<TableDataType>["columns"] = [
     {
@@ -119,11 +129,26 @@ export const TableLists = () => {
     setIsLoading(false);
   }, []);
 
-  const handleRowClick = (record: TableDataType) => {
-    setSelectedGuestTable(record);
-    setIsGuestModalOpen(true);
+  const handleRowClick = async (record: TableDataType) => {
+    const rowId = record.id as number;
+    try {
+      const guestsDataResponse = await getAllTableGuests(rowId);
 
-    console.log(record);
+      const guestsData: GuestsDataType = {
+        row: record,
+        guests: guestsDataResponse.attendingGuests,
+      };
+
+      console.log("guestData", guestsData);
+
+      setGuestData(guestsData.guests);
+      setSelectedGuestTable(guestsData.row);
+      setIsGuestModalOpen(true);
+
+      console.log(record);
+    } catch (error) {
+      console.error("Error fetching guests data:", error);
+    }
   };
 
   const handleCreateTable = (tableData: any) => {
