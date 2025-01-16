@@ -1,6 +1,8 @@
-import React from "react";
-import { Button, Space, Table, Tag } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Table, Tag } from "antd";
 import type { TableProps } from "antd";
+import { api } from "../../../services/api";
+import { addGuestToTable } from "../../../services/TableService";
 
 export interface GuestDataType {
   key: string;
@@ -50,26 +52,67 @@ const columns: TableProps<GuestDataType>["columns"] = [
       </Tag>
     ),
   },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, __) => (
-      <Space size="middle">
-        <Button type="default">Add</Button>
-      </Space>
-    ),
-  },
 ];
 
 export const AllAttendingGuests = ({
   guestData,
+  tableId,
+  onClose,
 }: {
   guestData: GuestDataType[];
+  tableId: number;
+  onClose: (data: any) => void;
 }) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, []);
+
+  const onSelectChange = (newSelectedRowKeys: any[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+
+    console.log("newSelectedRowKeys:", newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    table_id: tableId,
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const handleAssign = async () => {
+    const dataToPass = {
+      table_id: tableId,
+      attending_guest_ids: selectedRowKeys,
+    };
+    try {
+      const response = await addGuestToTable(dataToPass);
+      onClose(response.attendingGuests);
+      console.log("Assign table response:", response);
+    } catch (error) {
+      console.error("Error assigning table:", error);
+    }
+
+    console.log("dataToPass:", dataToPass);
+  };
+
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 p-4">
-      <h1 className="text-3xl font-semibold">Add new Table</h1>
-      <Table<GuestDataType> columns={columns} dataSource={guestData} />
+      <h1 className="text-3xl font-semibold">All Attending Guests</h1>
+      <Table<GuestDataType>
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={guestData}
+      />
+      <Button
+        onClick={handleAssign}
+        disabled={selectedRowKeys.length === 0 || selectedRowKeys === null}
+        type="primary"
+        className="bg-blue-500"
+      >
+        Assign Table
+      </Button>
     </div>
   );
 };

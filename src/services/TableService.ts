@@ -6,6 +6,56 @@ interface tableDataType {
   status: string;
 }
 
+export const deleteGuestFromTable = async ({
+  attending_guest_id,
+  table_id,
+}: {
+  attending_guest_id: number;
+  table_id: number;
+}) => {
+  try {
+    const response = await api.delete(
+      `admin/seat-plan/guests/${attending_guest_id}`,
+      { data: { table_id } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting guest from table:", error);
+    throw error;
+  }
+};
+
+export const addGuestToTable = async ({
+  table_id,
+  attending_guest_ids,
+}: {
+  table_id: number;
+  attending_guest_ids: number[];
+}) => {
+  const data = {
+    table_id,
+    attending_guest_ids,
+  };
+
+  try {
+    const response = await api.post(`admin/seat-plan/guests`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding guest to table:", error);
+    throw error;
+  }
+};
+
+export const getAllAttendingGuests = async () => {
+  try {
+    const response = await api.get("admin/seat-plan/guests");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching attending guests:", error);
+    throw error;
+  }
+};
+
 export const getAllTableGuests = async (tableId: number) => {
   try {
     const response = await api.get(`admin/seat-plan/guests/${tableId}`);

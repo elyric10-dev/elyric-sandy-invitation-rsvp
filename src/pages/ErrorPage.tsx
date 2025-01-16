@@ -47,7 +47,7 @@ const ErrorPage = () => {
         icon={<CustomIcon />}
         status="403"
         title="Invite-Only Event"
-        subTitle="This event is invite-only, and your invitation code isn’t on the guest list. But hey, no hard feelings! 😁"
+        subTitle="This event is invite-only, and your invitation code isn’t on the guest list. But hey, no hard feelings! 😁 But if you have an invitation url please check if you have submitted your response as 'Attending'."
         extra={
           <Button type="primary" onClick={handleBackHome}>
             Back to Home

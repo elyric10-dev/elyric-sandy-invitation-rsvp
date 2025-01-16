@@ -15,7 +15,6 @@ interface IWeddingInvitationCardProps {
   eventDay: string;
   eventTime: string;
   eventVenue: string;
-  eventVenueLocated: string;
   eventAddress: string;
   coupleHashtag: string;
 }
@@ -30,7 +29,6 @@ export const WeddingInvitationCard = ({
   eventDay,
   eventTime,
   eventVenue,
-  eventVenueLocated,
   eventAddress,
   coupleHashtag,
 }: IWeddingInvitationCardProps) => {
@@ -173,7 +171,6 @@ export const WeddingInvitationCard = ({
           style={{ color: lighterBlack }}
         >
           <h2 className="montaser-arabic !font-bold text-2xl">{eventVenue}</h2>
-          <h2 className="courgette text-lg">{eventVenueLocated}</h2>
           <h2 className="montaser-arabic">{eventAddress}</h2>
         </div>
 

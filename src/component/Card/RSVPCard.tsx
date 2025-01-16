@@ -78,7 +78,7 @@ export const RSVPCard = ({
 
       if (hasAttendingGuest) {
         Modal.success({
-          content: "Submitted! Thank you for your response! 🤗",
+          content: "Submitted! Thank you for your response! Please keep your QR Pass Code 🤗",
           style: {
             top: "50%",
             transform: "translateY(-50%)",
@@ -93,7 +93,7 @@ export const RSVPCard = ({
       } else {
         Modal.warning({
           content:
-            "Response submitted! We are sorry to hear that you can't attend. I hope you will change your mind before February 02, 2025. Thank you! 🥺",
+            "Response submitted! We are sorry to hear that you can't attend. I hope you will change your mind before February 10, 2025. Thank you! 🥺",
           style: {
             top: "50%",
             transform: "translateY(-50%)",
@@ -108,7 +108,7 @@ export const RSVPCard = ({
   };
 
   return (
-    <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-lg shadow-lg">
+    <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-b-lg shadow-lg">
       {/* Smoke Background */}
       <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
         <Image src={smoke} alt="Smoke" className="object-cover" />
@@ -215,13 +215,13 @@ export const RSVPCard = ({
               className="text-sm lato-regular-italic"
               style={{ color: "darkerLilac", lineHeight: 0.8 }}
             >
-              KINDLY CONFIRM YOUR ATTENDANCE BY
+              KINDLY CONFIRM YOUR ATTENDANCE ON OR BEFORE
             </h2>
             <h2
               className="text-xl lato-regular-italic font-semibold cursor-default relative z-10"
               style={{ color: darkerLilac }}
             >
-              FEBRUARY 02, 2025
+              FEBRUARY 10, 2025
             </h2>
           </div>
         </div>
@@ -242,7 +242,7 @@ export const RSVPCard = ({
                 >
                   <h3
                     className="courgette text-2xl"
-                    style={{ color: darkerLilac }}
+                    style={{ color: darkerLilac, lineHeight: "1.3rem" }}
                   >
                     {guest.name} {guest.middle} {guest.lastname}
                   </h3>

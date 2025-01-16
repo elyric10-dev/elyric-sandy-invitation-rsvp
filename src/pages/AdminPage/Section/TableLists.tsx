@@ -16,6 +16,7 @@ interface TableDataType {
   table_number: number;
   status: "available" | "reserved" | "occupied";
   capacity: number;
+  table_guests_count: number;
 }
 
 interface GuestsDataType {
@@ -86,7 +87,11 @@ export const TableLists = () => {
       title: "Capacity",
       key: "capacity",
       dataIndex: "capacity",
-      render: (_, data) => data.capacity,
+      render: (_, data) => (
+        <div>
+          {data.table_guests_count}/{data.capacity}
+        </div>
+      ),
     },
     {
       title: "Action",
@@ -198,6 +203,7 @@ export const TableLists = () => {
         footer={null}
       >
         <TableGuests
+          tableId={selectedGuestTable?.id as number}
           tableNumber={selectedGuestTable?.table_number || null}
           guestData={guestData}
         />

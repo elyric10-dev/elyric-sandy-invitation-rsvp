@@ -15,9 +15,8 @@ export const GatePass = () => {
       eventYear="2025"
       eventDay="Saturday"
       eventTime="03:00PM"
-      eventVenue="Crowne Garden Hotel"
-      eventVenueLocated="3rd floor Grand Ballroom"
-      eventAddress="Salinas Dr, Cebu City, 6000 Cebu"
+      eventVenue="Cebu Family Suites"
+      eventAddress="27 P. Almendras St., Mabolo, Cebu City, Philippines"
       coupleHashtag="#ifinELYfoundmySANshine"
     />
   );

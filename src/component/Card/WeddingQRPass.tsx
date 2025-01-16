@@ -4,11 +4,13 @@ import flowerBorderTop from "../../assets/rsvp/border/border-t.png";
 import flowerBorderX from "../../assets/rsvp/border/border-x.png";
 import flowerBorderBottom from "../../assets/rsvp/border/border-b.png";
 import smoke from "../../assets/rsvp/smoke.png";
+import wedding_invitation_vips from "../../assets/rsvp/wedding_invitation_vips.png";
 import { useEffect, useState } from "react";
 import {
   getInvitationData,
   getPassData,
 } from "../../services/invitationService";
+import { WhatToWearSection } from "../../pages/RSVPPage/Sections/WhatToWearSection";
 
 interface IWeddingQRPassProps {
   invitationCode: string;
@@ -21,7 +23,6 @@ interface IWeddingQRPassProps {
   eventDay: string;
   eventTime: string;
   eventVenue: string;
-  eventVenueLocated: string;
   eventAddress: string;
   coupleHashtag: string;
 }
@@ -37,7 +38,6 @@ export const WeddingQRPass = ({
   eventDay,
   eventTime,
   eventVenue,
-  eventVenueLocated,
   eventAddress,
   coupleHashtag,
 }: IWeddingQRPassProps) => {
@@ -84,16 +84,15 @@ export const WeddingQRPass = ({
   if (attendeesCount > 0) {
     return (
       <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-lg shadow-lg">
-        {/* Smoke Background */}
-        <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
-          <Image src={smoke} alt="Smoke" className="object-cover" />
-        </div>
-        <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
-          <Image src={smoke} alt="Smoke" className="object-cover" />
-        </div>
-        <div className="absolute right-0 bottom-0 pointer-events-none animate-pulse-slow">
-          <Image src={smoke} alt="Smoke" className="object-cover" />
-        </div>
+
+
+          {/* Smoke Background */}
+          <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+            <Image src={smoke} alt="Smoke" className="object-cover" />
+          </div>
+          <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+            <Image src={smoke} alt="Smoke" className="object-cover" />
+          </div>
 
         {/* Top Border */}
         <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
@@ -197,10 +196,7 @@ export const WeddingQRPass = ({
             </div>
             <div className="flex flex-col items-center gap-2 montaser-arabic text-2xl">
               <h3 className="font-semibold">{eventMonth}</h3>
-              <h3
-                className="font-[600] text-5xl"
-                style={{ color: darkerLilac }}
-              >
+              <h3 className="font-[600] text-5xl" style={{ color: lilac }}>
                 {eventDate}
               </h3>
               <h3 className="font-semibold">{eventYear}</h3>
@@ -223,7 +219,6 @@ export const WeddingQRPass = ({
             <h2 className="montaser-arabic !font-bold text-2xl">
               {eventVenue}
             </h2>
-            <h2 className="courgette text-lg">{eventVenueLocated}</h2>
             <h2 className="montaser-arabic">{eventAddress}</h2>
           </div>
 
@@ -276,7 +271,7 @@ export const WeddingQRPass = ({
                   <div className="relative flex flex-col items-center justify-center gap-4">
                     <h3
                       className="courgette text-2xl"
-                      style={{ color: darkerLilac }}
+                      style={{ color: darkerLilac, lineHeight: "1.3rem" }}
                     >
                       {guest.name} {guest.middle} {guest.lastname}
                     </h3>
@@ -287,6 +282,35 @@ export const WeddingQRPass = ({
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Note Details */}
+            <div
+              className="p-2 flex flex-col items-center gap-1 mt-8 border-2 rounded-lg"
+              style={{ color: lighterBlack, borderColor: lilac }}
+            >
+              <h2 className="montaser-arabic !font-bold">Note:</h2>
+              <div className="flex flex-col items-center justify-center">
+                <h2
+                  className="text-sm lato-regular-italic font-bold"
+                  style={{ lineHeight: 0.5 }}
+                >
+                  Please present this QR code
+                </h2>
+                <h2 className="text-sm lato-regular-italic font-bold">
+                  at the entrance.
+                </h2>
+              </div>
+
+              <Divider
+                variant="dashed"
+                style={{ borderColor: lilac, margin: 0 }}
+              />
+              <div className="text-xs text-start text-gray-500">
+                <p>⚠️ This pass is required for entry</p>
+                <p>⚠️ Not transferable</p>
+                <p>⚠️ Valid only for the number of seats specified</p>
+              </div>
             </div>
             {/* Change of mind link */}
             <div className="flex flex-col items-center justify-center text-center gap-2 m-8">
@@ -316,16 +340,85 @@ export const WeddingQRPass = ({
               </h2>
               <h2 className="courgette text-md" style={{ color: darkerLilac }}>
                 Please note: RSVP changes can be made until <br />
-                February 2, 2025
+                February 10, 2025
               </h2>
             </div>
           </div>
+          
+          {/* ENTOURAGE LISTS */}
+          <div className="relative h-full flex items-center justify-center overflow-hidden shadow-md rounded-t-lg">
+            <Image
+              preview={false}
+              src={wedding_invitation_vips}
+              alt="Vips"
+              className="w-full min-w-xs max-w-lg mix-blend-multiply"
+            />
 
-          <Divider variant="solid" style={{ borderColor: lilac }} />
+            {/* Smoke Background */}
+            <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+            <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+          </div>
+
+          {/* WHAT TO WEAR */}
+          <WhatToWearSection />
+
+          <div className="relative">
+            <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+            <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+          </div>
 
           {/* QR LOVE GIFT */}
 
-          <div className="flex flex-col items-center justify-center gap-8 leading-4">
+          <div className="relative flex flex-col items-center justify-center gap-8 leading-4 pt-16">
+            {/* Smoke Background */}
+            <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+            <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+              <Image src={smoke} alt="Smoke" className="object-cover" />
+            </div>
+
+            {/* Top Border */}
+            <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
+              <Image
+                src={flowerBorderTop}
+                onLoad={handleImageLoad}
+                alt="Top Flower Border"
+                className="object-cover"
+              />
+            </div>
+
+            {/* Horizontal Borders */}
+            <div className="absolute top-0 w-full pointer-events-none opacity-40">
+              <Image
+                src={flowerBorderX}
+                alt="Horizontal Border"
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute top-1/4 w-full pointer-events-none opacity-40">
+              <Image
+                src={flowerBorderX}
+                alt="Horizontal Border"
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute top-1/2 w-full pointer-events-none opacity-40">
+              <Image
+                src={flowerBorderX}
+                alt="Horizontal Border"
+                className="object-cover"
+              />
+            </div>
+
             <div className="flex flex-col items-center justify-center px-16 text-center">
               <h2
                 className={`py-4 font-tallowSansTC text-[24px] font-semibold scale-y-[1.20]`}
@@ -397,36 +490,10 @@ export const WeddingQRPass = ({
             </div>
           </div>
 
-          {/* Note Details */}
           <div
-            className="p-2 flex flex-col items-center gap-1 mt-8 border-2 rounded-lg"
-            style={{ color: lighterBlack, borderColor: lilac }}
+            className="relative mt-16 mb-32 py-2 px-3 rounded overflow-hidden"
+            style={{ backgroundColor: lilac }}
           >
-            <h2 className="montaser-arabic !font-bold">Note:</h2>
-            <div className="flex flex-col items-center justify-center">
-              <h2
-                className="text-sm lato-regular-italic font-bold"
-                style={{ lineHeight: 0.5 }}
-              >
-                Please present this QR code
-              </h2>
-              <h2 className="text-sm lato-regular-italic font-bold">
-                at the entrance.
-              </h2>
-            </div>
-
-            <Divider
-              variant="dashed"
-              style={{ borderColor: lilac, margin: 0 }}
-            />
-            <div className="text-xs text-start text-gray-500">
-              <p>⚠️ This pass is required for entry</p>
-              <p>⚠️ Not transferable</p>
-              <p>⚠️ Valid only for the number of seats specified</p>
-            </div>
-          </div>
-
-          <div className="relative mt-16 mb-32 py-2 px-3 bg-[#7b629a]/70 rounded overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent transform translate-x-[-150%] animate-shine"></div>
             <h2 className="text-lg lato-regular-italic text-gray-100 cursor-default relative z-10">
               {coupleHashtag}
