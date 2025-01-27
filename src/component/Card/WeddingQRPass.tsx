@@ -44,6 +44,7 @@ export const WeddingQRPass = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [invitationData, setInvitationData] = useState<any>([]);
   const [attendeesCount, setAttendeesCount] = useState(0);
+  const [seatCount, setSeatCount] = useState(0);
 
   const lighterBlack = "#4e4449";
   const darkerLilac = "#7b629a";
@@ -59,6 +60,7 @@ export const WeddingQRPass = ({
 
         setAttendeesCount(invitationDataResponse.invitation.attended_count);
         setInvitationData(response.attending_guests);
+        setSeatCount(response.attending_guests.length);
 
         if (invitationDataResponse.invitation.attended_count === 0) {
           window.location.href = "/error";
@@ -84,15 +86,13 @@ export const WeddingQRPass = ({
   if (attendeesCount > 0) {
     return (
       <div className="relative w-full min-w-xs max-w-lg overflow-hidden rounded-lg shadow-lg">
-
-
-          {/* Smoke Background */}
-          <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
-            <Image src={smoke} alt="Smoke" className="object-cover" />
-          </div>
-          <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
-            <Image src={smoke} alt="Smoke" className="object-cover" />
-          </div>
+        {/* Smoke Background */}
+        <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+          <Image src={smoke} alt="Smoke" className="object-cover" />
+        </div>
+        <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+          <Image src={smoke} alt="Smoke" className="object-cover" />
+        </div>
 
         {/* Top Border */}
         <div className="absolute top-0 left-0 w-full pointer-events-none opacity-40">
@@ -213,7 +213,7 @@ export const WeddingQRPass = ({
 
           {/* VENUE LOCATION */}
           <div
-            className="pt-6 flex flex-col items-center"
+            className="pt-6 flex flex-col items-center text-center"
             style={{ color: lighterBlack }}
           >
             <h2 className="montaser-arabic !font-bold text-2xl">
@@ -263,7 +263,7 @@ export const WeddingQRPass = ({
               className="montaser-arabic !font-semibold text-2xl"
               style={{ color: lighterBlack }}
             >
-              GUEST NAMES
+              GUEST {seatCount > 1 ? "NAMES" : "NAME"}
             </h2>
             <div className="w-full flex flex-col items-center gap-2">
               {invitationData.map((guest: any) => (
@@ -344,7 +344,7 @@ export const WeddingQRPass = ({
               </h2>
             </div>
           </div>
-          
+
           {/* ENTOURAGE LISTS */}
           <div className="relative h-full flex items-center justify-center overflow-hidden shadow-md rounded-t-lg">
             <Image
@@ -379,10 +379,10 @@ export const WeddingQRPass = ({
 
           <div className="relative flex flex-col items-center justify-center gap-8 leading-4 pt-16">
             {/* Smoke Background */}
-            <div className="absolute inset-0 pointer-events-none animate-pulse-slow">
+            <div className="absolute inset-0 pointer-events-none animate-pulse-slow -z-10">
               <Image src={smoke} alt="Smoke" className="object-cover" />
             </div>
-            <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow">
+            <div className="absolute right-0 top-0 pointer-events-none animate-pulse-slow -z-10">
               <Image src={smoke} alt="Smoke" className="object-cover" />
             </div>
 

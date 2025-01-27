@@ -3,8 +3,12 @@ import React from "react";
 import { createTable } from "../../../services/TableService";
 
 const CreateTable = ({ onCreated }: { onCreated: (data: any) => void }) => {
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setIsLoading(true);
 
     const form = e.target as HTMLFormElement;
 
@@ -29,6 +33,8 @@ const CreateTable = ({ onCreated }: { onCreated: (data: any) => void }) => {
     } catch (error) {
       console.error("Error creating table:", error);
     }
+
+    setIsLoading(false);
   };
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 p-4">
@@ -68,8 +74,19 @@ const CreateTable = ({ onCreated }: { onCreated: (data: any) => void }) => {
             <option value="reserved">Reserved</option>
           </select>
         </div>
-        <Button type="primary" htmlType="submit" className="bg-purple-500">
-          Create Table
+        <Button
+          type="primary"
+          htmlType="submit"
+          className="bg-purple-500"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+            </div>
+          ) : (
+            "Create Table"
+          )}
         </Button>
       </form>
     </div>

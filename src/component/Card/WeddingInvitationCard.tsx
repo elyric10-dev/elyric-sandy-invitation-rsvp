@@ -167,7 +167,7 @@ export const WeddingInvitationCard = ({
 
         {/* VENUE LOCATION */}
         <div
-          className="pt-6 flex flex-col items-center"
+          className="pt-6 flex flex-col items-center text-center"
           style={{ color: lighterBlack }}
         >
           <h2 className="montaser-arabic !font-bold text-2xl">{eventVenue}</h2>

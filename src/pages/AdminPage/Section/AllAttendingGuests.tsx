@@ -64,6 +64,7 @@ export const AllAttendingGuests = ({
   onClose: (data: any) => void;
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setSelectedRowKeys([]);
@@ -71,8 +72,6 @@ export const AllAttendingGuests = ({
 
   const onSelectChange = (newSelectedRowKeys: any[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
-
-    console.log("newSelectedRowKeys:", newSelectedRowKeys);
   };
 
   const rowSelection = {
@@ -82,19 +81,19 @@ export const AllAttendingGuests = ({
   };
 
   const handleAssign = async () => {
+    setIsLoading(true);
     const dataToPass = {
       table_id: tableId,
       attending_guest_ids: selectedRowKeys,
     };
     try {
       const response = await addGuestToTable(dataToPass);
-      onClose(response.attendingGuests);
-      console.log("Assign table response:", response);
+      onClose(response.table_members);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error assigning table:", error);
     }
-
-    console.log("dataToPass:", dataToPass);
+    setIsLoading(false);
   };
 
   return (
@@ -107,7 +106,9 @@ export const AllAttendingGuests = ({
       />
       <Button
         onClick={handleAssign}
-        disabled={selectedRowKeys.length === 0 || selectedRowKeys === null}
+        disabled={
+          isLoading || selectedRowKeys.length === 0 || selectedRowKeys === null
+        }
         type="primary"
         className="bg-blue-500"
       >

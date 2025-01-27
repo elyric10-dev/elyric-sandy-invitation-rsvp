@@ -53,8 +53,7 @@ export const TableGuests = ({
         table_id: tableId,
       });
 
-      setGuestInTable(response.attendingGuests);
-      console.log("handleDelete response:", response);
+      setGuestInTable(response.table_members);
     } catch (error) {
       console.error("Error deleting guest from table:", error);
     }
@@ -63,8 +62,6 @@ export const TableGuests = ({
   const handleAddTableGuestOnClose = (data: GuestDataType[]) => {
     setIsAddTableGuestModalOpen(false);
     setGuestInTable(data);
-
-    console.log("handleAddTableGuestOnClose data:", data);
   };
 
   const columns: TableProps<GuestDataType>["columns"] = [
@@ -144,7 +141,11 @@ export const TableGuests = ({
           </svg>
         </div>
       </div>
-      <Table<GuestDataType> columns={columns} dataSource={guestInTable} />
+      <Table<GuestDataType>
+        rowKey="id"
+        columns={columns}
+        dataSource={guestInTable}
+      />
       <Modal
         open={isAddTableGuestModalOpen}
         onCancel={() => setIsAddTableGuestModalOpen(false)}

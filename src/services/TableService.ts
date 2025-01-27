@@ -6,6 +6,16 @@ interface tableDataType {
   status: string;
 }
 
+export const getAllTablesWithGuests = async () => {
+  try {
+    const response = await api.get("admin/seat-plan/tables");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tables with guests:", error);
+    throw error;
+  }
+};
+
 export const deleteGuestFromTable = async ({
   attending_guest_id,
   table_id,
@@ -58,7 +68,7 @@ export const getAllAttendingGuests = async () => {
 
 export const getAllTableGuests = async (tableId: number) => {
   try {
-    const response = await api.get(`admin/seat-plan/guests/${tableId}`);
+    const response = await api.get(`admin/seat-plan/tables/${tableId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching guests by table id:", error);
@@ -68,8 +78,7 @@ export const getAllTableGuests = async (tableId: number) => {
 
 export const getTableData = async () => {
   try {
-    const response = await api.get("admin/seat-plan");
-    console.log("getTableData response:", response.data);
+    const response = await api.get("admin/seat-plan/tables");
     return response.data;
   } catch (error) {
     console.error("Error fetching table data:", error);
@@ -79,7 +88,7 @@ export const getTableData = async () => {
 
 export const createTable = async (tableData: tableDataType) => {
   try {
-    const response = await api.post("admin/seat-plan", tableData);
+    const response = await api.post("admin/seat-plan/tables", tableData);
     return response.data;
   } catch (error) {
     console.error("Error creating table:", error);
@@ -89,7 +98,7 @@ export const createTable = async (tableData: tableDataType) => {
 
 export const deleteTable = async (tableId: number) => {
   try {
-    const response = await api.delete(`admin/seat-plan/${tableId}`);
+    const response = await api.delete(`admin/seat-plan/tables/${tableId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting table:", error);

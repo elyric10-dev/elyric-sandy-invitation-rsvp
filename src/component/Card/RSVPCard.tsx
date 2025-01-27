@@ -241,7 +241,7 @@ export const RSVPCard = ({
                   style={{ borderColor: gold }}
                 >
                   <h3
-                    className="courgette text-2xl"
+                    className="courgette text-2xl pb-2"
                     style={{ color: darkerLilac, lineHeight: "1.3rem" }}
                   >
                     {guest.name} {guest.middle} {guest.lastname}

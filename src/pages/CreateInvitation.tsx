@@ -7,15 +7,7 @@ import {
   DeleteOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-
-const api = axios.create({
-  baseURL: "https://api-rsvp.elyricm.cloud",
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
+import { api } from "../services/api";
 
 interface IPartyMembers {
   name: string;
@@ -34,7 +26,6 @@ const CreateInvitation = () => {
   const [loading, setLoading] = useState(false);
   const [invitationLink, setInvitationLink] = useState("");
   const [partyMembers, setPartyMembers] = useState<any>([]);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [seatCount, setSeatCount] = useState(0);
 
   const addPartyMember = () => {
@@ -47,11 +38,6 @@ const CreateInvitation = () => {
     const updatedPartyMembers = [...partyMembers, values];
 
     setPartyMembers(updatedPartyMembers);
-
-    if (partyMembers.length === seatCount) {
-      console.log("seat count", seatCount);
-      setIsButtonDisabled(false);
-    }
 
     form.setFieldsValue({
       name: "",
@@ -80,7 +66,7 @@ const CreateInvitation = () => {
 
     try {
       setLoading(true);
-      const response = await api.post("/api/invitations", {
+      const response = await api.post("/invitations", {
         seat_count: seatCount,
         party_members: partyMembers,
       });
@@ -105,8 +91,25 @@ const CreateInvitation = () => {
   };
 
   const copyInvitationLink = () => {
+    const messageToCopy = `We've reserved a seat for you at our WEDDING! Please follow these simple steps to confirm your attendance:
+
+1. Visit your personal RSVP link (provided below)
+2. Select your attendance status
+3. Click SUBMIT
+4. Click OKAY and wait
+5. Keep your QR pass code
+
+IMPORTANT: This is your unique invitation link - please do not share it with others.
+
+Please RSVP or confirm your attendance on or before February 10, 2025.
+We look forward to hearing from you!
+
+Thank you! 🤗
+
+Your invitation link: ${invitationLink}`;
+
     navigator.clipboard
-      .writeText(invitationLink)
+      .writeText(messageToCopy)
       .then(() => message.success("Invitation link copied to clipboard!"))
       .catch(() => message.error("Failed to copy link"));
   };
@@ -121,7 +124,7 @@ const CreateInvitation = () => {
       </div>
 
       <Form
-        className="flex flex-col justify-center items-center"
+        className="flex flex-col justify-center items-center lg:flex-row lg:items-start lg:gap-4"
         form={form}
         layout="vertical"
       >
@@ -190,23 +193,42 @@ const CreateInvitation = () => {
               >
                 <List.Item.Meta
                   title={`${member.name} ${
-                    member.partyMiddle ? member.middle : ""
+                    member.middle ? member.middle : ""
                   } ${member.lastname}`}
                 />
               </List.Item>
             )}
           />
 
-          <div className="w-full flex justify-center">
+          <div className="w-full flex flex-col justify-center">
             <Button
               type="primary"
               loading={loading}
               className="mt-4 shadow-md"
               onClick={handleCreateInvitation}
-              disabled={seatCount !== partyMembers.length}
+              disabled={
+                seatCount !== partyMembers.length ||
+                partyMembers.length === 0 ||
+                invitationLink !== ""
+              }
             >
               Create RSVP Invitation
             </Button>
+
+            {invitationLink && (
+              <Button
+                type="primary"
+                className="mt-4 shadow-md bg-green-500"
+                onClick={() => {
+                  setInvitationLink("");
+                  form.resetFields();
+                  setPartyMembers([]);
+                  setSeatCount(0);
+                }}
+              >
+                Create again
+              </Button>
+            )}
           </div>
 
           {invitationLink && (
