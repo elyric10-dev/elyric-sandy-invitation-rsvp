@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Form, Input, InputNumber, Button, Card, List, message } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Card,
+  List,
+  message,
+  Checkbox,
+} from "antd";
 import {
   PlusOutlined,
   HeartFilled,
@@ -27,49 +35,76 @@ const CreateInvitation = () => {
   const [invitationLink, setInvitationLink] = useState("");
   const [partyMembers, setPartyMembers] = useState<any>([]);
   const [seatCount, setSeatCount] = useState(0);
+  const [withKids, setWithKids] = useState(false);
+  const [kidsList, setKidsList] = useState<any>([]);
 
-  const addPartyMember = () => {
+  const addPartyMember = (hasKid: boolean) => {
     const values = form.getFieldsValue(["name", "middle", "lastname"]);
 
     if (!values.name || !values.lastname) {
       message.error("Please fill in the required fields");
       return;
     }
-    const updatedPartyMembers = [...partyMembers, values];
 
-    setPartyMembers(updatedPartyMembers);
+    if (hasKid) {
+      const updatedKidsList = [...kidsList, values];
+      setKidsList(updatedKidsList);
+    } else {
+      const updatedPartyMembers = [...partyMembers, values];
+      setPartyMembers(updatedPartyMembers);
+    }
 
     form.setFieldsValue({
       name: "",
       middle: "",
       lastname: "",
     });
+
+    setWithKids(false);
   };
 
-  const handleEdit = (index: number) => {
-    // Set the input fields with the selected member's data
-    form.setFieldsValue({
-      name: partyMembers[index].name,
-      middle: partyMembers[index].middle,
-      lastname: partyMembers[index].lastname,
-    });
-
-    removePartyMember(index);
+  const handleEdit = (index: number, hasKid: boolean) => {
+    if (hasKid) {
+      setWithKids(true);
+      form.setFieldsValue({
+        name: kidsList[index].name,
+        middle: kidsList[index].middle,
+        lastname: kidsList[index].lastname,
+      });
+      removeKid(index);
+    } else {
+      setWithKids(false);
+      form.setFieldsValue({
+        name: partyMembers[index].name,
+        middle: partyMembers[index].middle,
+        lastname: partyMembers[index].lastname,
+      });
+      removePartyMember(index);
+    }
   };
 
   const removePartyMember = (index: number) => {
     setPartyMembers(partyMembers.filter((_: any, i: number) => i !== index));
   };
 
+  const removeKid = (index: number) => {
+    setKidsList(kidsList.filter((_: any, i: number) => i !== index));
+  };
+
   const handleCreateInvitation = async (e: React.MouseEvent) => {
     e.preventDefault();
+
+    console.log("Kids List: ", kidsList);
 
     try {
       setLoading(true);
       const response = await api.post("/invitations", {
         seat_count: seatCount,
         party_members: partyMembers,
+        kids_list: kidsList,
       });
+
+      console.log("Response: ", response);
 
       const link = response.data.invitation_link;
       setInvitationLink(link);
@@ -77,6 +112,7 @@ const CreateInvitation = () => {
       message.success("Invitation created successfully!");
       form.resetFields();
     } catch (error: any) {
+      console.log("Error creating invitation: ", error);
       message.error(
         error.response?.data?.error || "Failed to create invitation"
       );
@@ -106,12 +142,16 @@ We look forward to hearing from you!
 
 Thank you! 🤗
 
-Your invitation link: ${invitationLink}`;
+Your invitation link: https://${invitationLink}`;
 
     navigator.clipboard
       .writeText(messageToCopy)
       .then(() => message.success("Invitation link copied to clipboard!"))
       .catch(() => message.error("Failed to copy link"));
+  };
+
+  const handleSetKids = () => {
+    setWithKids(!withKids);
   };
 
   return (
@@ -148,25 +188,54 @@ Your invitation link: ${invitationLink}`;
         <Card title="Party Members" className="w-96 mb-8 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-3 xs:gap-0 md:gap-4">
             <Form.Item name="name" label="First Name">
-              <Input disabled={seatCount === partyMembers.length} />
+              <Input
+                disabled={
+                  (seatCount === partyMembers.length ||
+                    seatCount < partyMembers.length) &&
+                  !withKids
+                }
+              />
             </Form.Item>
 
             <Form.Item name="middle" label="Middle Name">
-              <Input disabled={seatCount === partyMembers.length} />
+              <Input
+                disabled={
+                  (seatCount === partyMembers.length ||
+                    seatCount < partyMembers.length) &&
+                  !withKids
+                }
+              />
             </Form.Item>
 
             <Form.Item name="lastname" label="Last Name">
-              <Input disabled={seatCount === partyMembers.length} />
+              <Input
+                disabled={
+                  (seatCount === partyMembers.length ||
+                    seatCount < partyMembers.length) &&
+                  !withKids
+                }
+              />
             </Form.Item>
+          </div>
+
+          {/* WITH KIDS CHECKBOX */}
+
+          <div className="flex items-center gap-2">
+            <p className="ml-2">Kids?</p>
+            <Checkbox checked={withKids} onChange={handleSetKids} />
           </div>
 
           <Form.Item>
             <Button
               type="dashed"
-              onClick={addPartyMember}
+              onClick={() => addPartyMember(withKids)}
               block
               icon={<PlusOutlined />}
-              disabled={seatCount === partyMembers.length}
+              disabled={
+                (seatCount === partyMembers.length ||
+                  seatCount < partyMembers.length) &&
+                !withKids
+              }
             >
               Add Party Member
             </Button>
@@ -181,7 +250,7 @@ Your invitation link: ${invitationLink}`;
                   <Button
                     type="text"
                     icon={<EditOutlined />}
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEdit(index, false)}
                   />,
                   <Button
                     type="text"
@@ -199,6 +268,38 @@ Your invitation link: ${invitationLink}`;
               </List.Item>
             )}
           />
+
+          {kidsList.length > 0 && (
+            <Card title="Kids List" className="mt-4 bg-gray-200 shadow-md">
+              <List
+                className="text-left"
+                dataSource={kidsList}
+                renderItem={(kid: any, index: number) => (
+                  <List.Item
+                    actions={[
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEdit(index, true)}
+                      />,
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => removeKid(index)}
+                      />,
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={`${kid.name} ${kid.middle ? kid.middle : ""} ${
+                        kid.lastname
+                      }`}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          )}
 
           <div className="w-full flex flex-col justify-center">
             <Button

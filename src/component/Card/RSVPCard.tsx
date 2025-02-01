@@ -21,6 +21,7 @@ export const RSVPCard = ({
   headerLogoUrl,
 }: IWeddingInvitationCardProps) => {
   const [invitationData, setInvitationData] = useState<any>([]);
+  const [kidsList, setKidsList] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [seatCount, setSeatCount] = useState(0);
 
@@ -35,6 +36,8 @@ export const RSVPCard = ({
       try {
         const response = await getInvitationData(invitationCode);
         setInvitationData(response.invitation.guests);
+        setKidsList(response.invitation.kids);
+        console.log("kids: ", response.invitation.kids);
         setSeatCount(response.invitation.seat_count);
       } catch (error) {
         console.error("Error fetching invitation data:", error);
@@ -43,47 +46,88 @@ export const RSVPCard = ({
     fetchInvitationData();
   }, [invitationCode]);
 
-  const handleIsAttendingClick = (id: number, isAttending: boolean) => {
+  const handleIsAttendingClick = (
+    id: number,
+    isAttending: boolean,
+    isKid: boolean
+  ) => {
     const guest = invitationData.find((guest: any) => guest.id === id);
+    const kid = kidsList.find((kid: any) => kid.id === id);
 
-    if (guest) guest.is_attending = isAttending;
-    else console.error("Guest not found with id:", id);
+    if (isKid) {
+      if (kid) kid.is_attending = isAttending;
+      else console.error("Kid not found with id:", id);
+    } else {
+      if (guest) guest.is_attending = isAttending;
+      else console.error("Guest not found with id:", id);
+    }
 
     setInvitationData([...invitationData]);
+    setKidsList([...kidsList]);
   };
 
-  const handleResetIsAttending = (id: number) => {
+  const handleResetIsAttending = (id: number, isKid: boolean) => {
     const guest = invitationData.find((guest: any) => guest.id === id);
-
-    if (guest) guest.is_attending = null;
-    else console.error("Guest not found with id:", id);
+    const kid = kidsList.find((kid: any) => kid.id === id);
+    if (isKid) {
+      if (kid) kid.is_attending = null;
+      else console.error("Kid not found with id:", id);
+    } else {
+      if (guest) guest.is_attending = null;
+      else console.error("Guest not found with id:", id);
+    }
 
     setInvitationData([...invitationData]);
+    setKidsList([...kidsList]);
   };
 
   const handleSubmitRSVP = async () => {
     setIsLoading(true);
 
+    const hasKidAttending = kidsList.some((kid: any) => kid.is_attending);
+    const hasGuestAttending = invitationData.some(
+      (guest: any) => guest.is_attending
+    );
+
+    if (hasKidAttending && !hasGuestAttending) {
+      return Modal.warning({
+        content: "Kids must be accompanied by their guardians.",
+        style: {
+          top: "50%",
+          transform: "translateY(-50%)",
+        },
+        onOk() {
+          setIsLoading(false);
+        },
+      });
+    }
+
     try {
       const data = {
         party_members: invitationData,
+        kids_list: kidsList,
       };
       const response = await updateInvitationData(invitationCode, data);
 
+      console.log("RSVP response: ", response);
+
       const updatedGuests = response.invitation.guests;
       setInvitationData(updatedGuests);
+
       const hasAttendingGuest = invitationData.some(
         (guest: any) => guest.is_attending
       );
 
       if (hasAttendingGuest) {
         Modal.success({
-          content: "Submitted! Thank you for your response! Please keep your QR Pass Code 🤗",
+          content:
+            "Submitted! Thank you for your response! Please keep your QR Pass Code 🤗",
           style: {
             top: "50%",
             transform: "translateY(-50%)",
           },
           onOk() {
+            setIsLoading(false);
             window.open(
               `https://elyric-sandy.elyricm.cloud/pass/${invitationCode}`,
               "_blank"
@@ -251,13 +295,17 @@ export const RSVPCard = ({
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <div
                         className="w-10 h-10 flex items-center justify-center bg-green-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        onClick={() => handleIsAttendingClick(guest.id, true)}
+                        onClick={() =>
+                          handleIsAttendingClick(guest.id, true, false)
+                        }
                       >
                         <FaSmile className="text-green-200" size={32} />
                       </div>
                       <div
                         className="w-10 h-10 flex items-center justify-center bg-red-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        onClick={() => handleIsAttendingClick(guest.id, false)}
+                        onClick={() =>
+                          handleIsAttendingClick(guest.id, false, false)
+                        }
                       >
                         <FaFrown className="text-red-200" size={32} />
                       </div>
@@ -266,10 +314,9 @@ export const RSVPCard = ({
 
                   {guest.is_attending !== null && (
                     <div className="flex items-end justify-right gap-2 mb-1 ">
-                      {guest.is_attending && (
+                      {guest.is_attending ? (
                         <h1 className="text-green-600">Attending</h1>
-                      )}
-                      {!guest.is_attending && (
+                      ) : (
                         <div className="flex flex-col items-center leading-[14px]">
                           <h1 className="text-red-600">Can't</h1>
                           <h1 className="text-red-600">Attend</h1>
@@ -278,7 +325,7 @@ export const RSVPCard = ({
                       <div
                         className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
                         style={{ backgroundColor: beige }}
-                        onClick={() => handleResetIsAttending(guest.id)}
+                        onClick={() => handleResetIsAttending(guest.id, false)}
                       >
                         <FaArrowRotateLeft
                           className="text-blue-500"
@@ -291,6 +338,76 @@ export const RSVPCard = ({
               </div>
             ))}
           </div>
+          {/* KIDS LIST */}
+          <h2
+            className="montaser-arabic !font-semibold text-2xl"
+            style={{ color: lighterBlack }}
+          >
+            {seatCount > 1 ? "KIDS LIST" : "KID LIST"}
+          </h2>
+          <div className="w-full flex flex-col items-center gap-2">
+            {kidsList.map((kid: any) => (
+              <div key={kid.id} className="w-full h-full">
+                <div
+                  className="flex items-end justify-between gap-4 border-b-2 mx-12"
+                  style={{ borderColor: gold }}
+                >
+                  <h3
+                    className="courgette text-2xl pb-2"
+                    style={{ color: darkerLilac, lineHeight: "1.3rem" }}
+                  >
+                    {kid.name} {kid.middle} {kid.lastname}
+                  </h3>
+
+                  {kid.is_attending === null && (
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <div
+                        className="w-10 h-10 flex items-center justify-center bg-green-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                        onClick={() =>
+                          handleIsAttendingClick(kid.id, true, true)
+                        }
+                      >
+                        <FaSmile className="text-green-200" size={32} />
+                      </div>
+                      <div
+                        className="w-10 h-10 flex items-center justify-center bg-red-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                        onClick={() =>
+                          handleIsAttendingClick(kid.id, false, true)
+                        }
+                      >
+                        <FaFrown className="text-red-200" size={32} />
+                      </div>
+                    </div>
+                  )}
+
+                  {kid.is_attending !== null && (
+                    <div className="flex items-end justify-right gap-2 mb-1">
+                      {kid.is_attending ? (
+                        <h1 className="text-green-600">Attending</h1>
+                      ) : (
+                        <div className="flex flex-col items-center leading-[14px]">
+                          <h1 className="text-red-600">Can't</h1>
+                          <h1 className="text-red-600">Attend</h1>
+                        </div>
+                      )}
+
+                      <div
+                        className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                        style={{ backgroundColor: beige }}
+                        onClick={() => handleResetIsAttending(kid.id, true)}
+                      >
+                        <FaArrowRotateLeft
+                          className="text-blue-500"
+                          size={20}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* RSVP Details */}
           <div
             className="mt-16 px-8 py-4 flex flex-col items-center border-2 rounded-lg"
@@ -356,7 +473,10 @@ export const RSVPCard = ({
             // If there is null in the guest list is_attend, disable the button
             disabled={
               isLoading ||
-              invitationData.some((guest: any) => guest.is_attending === null)
+              invitationData.some(
+                (guest: any) => guest.is_attending === null
+              ) ||
+              kidsList.some((kid: any) => kid.is_attending === null)
             }
           >
             {isLoading ? (
