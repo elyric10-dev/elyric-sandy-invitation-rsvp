@@ -9,6 +9,7 @@ import {
   getAllTableGuests,
   getTableData,
 } from "../../../services/TableService";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 interface TableDataType {
   id?: number;
@@ -78,13 +79,26 @@ export const TableLists = () => {
         <Space size="middle">
           <Button
             onClick={async (e) => {
-              e.stopPropagation(); // Prevent the click event from propagating to the parent
-              try {
-                const response = await deleteTable((data as { id: number }).id);
-                setTableData(response.tables);
-              } catch (error) {
-                console.error("Error deleting table:", error);
-              }
+              e.stopPropagation();
+
+              Modal.confirm({
+                title: "Are you sure you want to delete this table?",
+                icon: <ExclamationCircleOutlined />,
+                content: "This action cannot be undone.",
+                okText: "Yes",
+                okType: "danger",
+                cancelText: "No",
+                onOk: async () => {
+                  try {
+                    const response = await deleteTable(
+                      (data as { id: number }).id
+                    );
+                    setTableData(response.tables);
+                  } catch (error) {
+                    console.error("Error deleting table:", error);
+                  }
+                },
+              });
             }}
             className="z-10"
             type="primary"
@@ -141,9 +155,9 @@ export const TableLists = () => {
       className={`w-3 h-3 rounded-full ${
         statusType === "waiting"
           ? "bg-blue-500"
-          : statusType === "attending"
+          : statusType === "arrived"
           ? "bg-green-500"
-          : statusType === "cant_attend"
+          : statusType === "not-arrived"
           ? "bg-red-500"
           : ""
       } border border-gray-400 shadow-md`}

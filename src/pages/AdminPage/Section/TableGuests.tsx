@@ -13,7 +13,7 @@ export interface GuestDataType {
   name: string;
   middle: string;
   lastname: string;
-  status: "Arrived" | "Waiting" | "Not arrive";
+  status: "arrived" | "waiting" | "not-arrived";
 }
 
 export const TableGuests = ({
@@ -93,9 +93,9 @@ export const TableGuests = ({
       render: (_, data) => (
         <Tag
           color={
-            data.status === "Not arrive"
+            data.status === "not-arrived"
               ? "error"
-              : data.status === "Arrived"
+              : data.status === "arrived"
               ? "success"
               : "default"
           }
