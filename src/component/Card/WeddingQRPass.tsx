@@ -43,6 +43,7 @@ export const WeddingQRPass = ({
 }: IWeddingQRPassProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [invitationData, setInvitationData] = useState<any>([]);
+  const [kidsList, setKidsList] = useState<any>([]);
   const [attendeesCount, setAttendeesCount] = useState(0);
   const [seatCount, setSeatCount] = useState(0);
 
@@ -61,6 +62,7 @@ export const WeddingQRPass = ({
         setAttendeesCount(invitationDataResponse.invitation.attended_count);
         setInvitationData(response.attending_guests);
         setSeatCount(response.attending_guests.length);
+        setKidsList(response.kids);
 
         if (invitationDataResponse.invitation.attended_count === 0) {
           window.location.href = "/error";
@@ -274,6 +276,34 @@ export const WeddingQRPass = ({
                       style={{ color: darkerLilac, lineHeight: "1.3rem" }}
                     >
                       {guest.name} {guest.middle} {guest.lastname}
+                    </h3>
+                    <div
+                      className="absolute w-full h-[2px] bottom-0 opacity-75"
+                      style={{ backgroundColor: gold }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {kidsList.length > 0 && (
+              <h2
+                className="montaser-arabic !font-semibold text-2xl"
+                style={{ color: lighterBlack }}
+              >
+                {seatCount > 1 ? "KIDS" : "KID"}
+              </h2>
+            )}
+
+            <div className="w-full flex flex-col items-center gap-2">
+              {kidsList.map((kid: any) => (
+                <div key={kid.id} className="">
+                  <div className="relative flex flex-col items-center justify-center gap-4">
+                    <h3
+                      className="courgette text-2xl"
+                      style={{ color: darkerLilac, lineHeight: "1.3rem" }}
+                    >
+                      {kid.name} {kid.middle} {kid.lastname}
                     </h3>
                     <div
                       className="absolute w-full h-[2px] bottom-0 opacity-75"
