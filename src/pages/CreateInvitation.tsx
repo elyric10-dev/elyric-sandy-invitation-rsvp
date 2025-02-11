@@ -155,12 +155,9 @@ Your invitation link: https://${invitationLink}`;
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="mx-auto p-6">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-script text-red-600 mb-2">
-          Elyric & Sandy
-        </h1>
-        <HeartFilled className="text-red-500 text-2xl" />
+        <h2 className="text-3xl font-semibold text-gray-800">Invitation</h2>
       </div>
 
       <Form

@@ -1,4 +1,4 @@
-import { Image, Modal } from "antd";
+import { Image, Modal, Tooltip } from "antd";
 import flowerBorderTop from "../../assets/rsvp/border/border-t.png";
 import flowerBorderX from "../../assets/rsvp/border/border-x.png";
 import flowerBorderBottom from "../../assets/rsvp/border/border-b.png";
@@ -10,6 +10,7 @@ import {
   getInvitationData,
   updateInvitationData,
 } from "../../services/invitationService";
+import { getServerDate } from "../../services/GlobalSettings";
 
 interface IWeddingInvitationCardProps {
   invitationCode: string;
@@ -24,20 +25,35 @@ export const RSVPCard = ({
   const [kidsList, setKidsList] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [seatCount, setSeatCount] = useState(0);
+  const [isDeadline, setIsDeadline] = useState(false);
 
   const lighterBlack = "#4e4449";
   const darkerLilac = "#7b629a";
   const lilac = "#c8a2c8";
   const gold = "#d4bc68";
   const beige = "#f5f5dc";
+  const deadlineDay = 10;
 
   useEffect(() => {
     const fetchInvitationData = async () => {
       try {
+        const dateResponse = await getServerDate();
+        const serverDate = new Date(dateResponse.server_date);
+        const onOrBeforeDate = new Date(
+          serverDate.getFullYear(),
+          1,
+          deadlineDay + 1
+        ); // Last is February 10 so, will be disabled once February 11
+
+        if (serverDate > onOrBeforeDate) {
+          setIsDeadline(true);
+        } else {
+          setIsDeadline(false);
+        }
+
         const response = await getInvitationData(invitationCode);
         setInvitationData(response.invitation.guests);
         setKidsList(response.invitation.kids);
-        console.log("kids: ", response.invitation.kids);
         setSeatCount(response.invitation.seat_count);
       } catch (error) {
         console.error("Error fetching invitation data:", error);
@@ -322,16 +338,20 @@ export const RSVPCard = ({
                           <h1 className="text-red-600">Attend</h1>
                         </div>
                       )}
-                      <div
-                        className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        style={{ backgroundColor: beige }}
-                        onClick={() => handleResetIsAttending(guest.id, false)}
-                      >
-                        <FaArrowRotateLeft
-                          className="text-blue-500"
-                          size={20}
-                        />
-                      </div>
+                      {!isDeadline && (
+                        <div
+                          className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                          style={{ backgroundColor: beige }}
+                          onClick={() =>
+                            handleResetIsAttending(guest.id, false)
+                          }
+                        >
+                          <FaArrowRotateLeft
+                            className="text-blue-500"
+                            size={20}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -339,74 +359,78 @@ export const RSVPCard = ({
             ))}
           </div>
           {/* KIDS LIST */}
-          <h2
-            className="montaser-arabic !font-semibold text-2xl"
-            style={{ color: lighterBlack }}
-          >
-            {seatCount > 1 ? "KIDS LIST" : "KID LIST"}
-          </h2>
-          <div className="w-full flex flex-col items-center gap-2">
-            {kidsList.map((kid: any) => (
-              <div key={kid.id} className="w-full h-full">
-                <div
-                  className="flex items-end justify-between gap-4 border-b-2 mx-12"
-                  style={{ borderColor: gold }}
-                >
-                  <h3
-                    className="courgette text-2xl pb-2"
-                    style={{ color: darkerLilac, lineHeight: "1.3rem" }}
-                  >
-                    {kid.name} {kid.middle} {kid.lastname}
-                  </h3>
-
-                  {kid.is_attending === null && (
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <div
-                        className="w-10 h-10 flex items-center justify-center bg-green-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        onClick={() =>
-                          handleIsAttendingClick(kid.id, true, true)
-                        }
+          {kidsList && kidsList.length > 0 && (
+            <>
+              <h2
+                className="montaser-arabic !font-semibold text-2xl"
+                style={{ color: lighterBlack }}
+              >
+                {seatCount > 1 ? "KIDS LIST" : "KID LIST"}
+              </h2>
+              <div className="w-full flex flex-col items-center gap-2">
+                {kidsList.map((kid: any) => (
+                  <div key={kid.id} className="w-full h-full">
+                    <div
+                      className="flex items-end justify-between gap-4 border-b-2 mx-12"
+                      style={{ borderColor: gold }}
+                    >
+                      <h3
+                        className="courgette text-2xl pb-2"
+                        style={{ color: darkerLilac, lineHeight: "1.3rem" }}
                       >
-                        <FaSmile className="text-green-200" size={32} />
-                      </div>
-                      <div
-                        className="w-10 h-10 flex items-center justify-center bg-red-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        onClick={() =>
-                          handleIsAttendingClick(kid.id, false, true)
-                        }
-                      >
-                        <FaFrown className="text-red-200" size={32} />
-                      </div>
-                    </div>
-                  )}
+                        {kid.name} {kid.middle} {kid.lastname}
+                      </h3>
 
-                  {kid.is_attending !== null && (
-                    <div className="flex items-end justify-right gap-2 mb-1">
-                      {kid.is_attending ? (
-                        <h1 className="text-green-600">Attending</h1>
-                      ) : (
-                        <div className="flex flex-col items-center leading-[14px]">
-                          <h1 className="text-red-600">Can't</h1>
-                          <h1 className="text-red-600">Attend</h1>
+                      {kid.is_attending === null && (
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <div
+                            className="w-10 h-10 flex items-center justify-center bg-green-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                            onClick={() =>
+                              handleIsAttendingClick(kid.id, true, true)
+                            }
+                          >
+                            <FaSmile className="text-green-200" size={32} />
+                          </div>
+                          <div
+                            className="w-10 h-10 flex items-center justify-center bg-red-500 shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                            onClick={() =>
+                              handleIsAttendingClick(kid.id, false, true)
+                            }
+                          >
+                            <FaFrown className="text-red-200" size={32} />
+                          </div>
                         </div>
                       )}
 
-                      <div
-                        className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
-                        style={{ backgroundColor: beige }}
-                        onClick={() => handleResetIsAttending(kid.id, true)}
-                      >
-                        <FaArrowRotateLeft
-                          className="text-blue-500"
-                          size={20}
-                        />
-                      </div>
+                      {kid.is_attending !== null && (
+                        <div className="flex items-end justify-right gap-2 mb-1">
+                          {kid.is_attending ? (
+                            <h1 className="text-green-600">Attending</h1>
+                          ) : (
+                            <div className="flex flex-col items-center leading-[14px]">
+                              <h1 className="text-red-600">Can't</h1>
+                              <h1 className="text-red-600">Attend</h1>
+                            </div>
+                          )}
+
+                          <div
+                            className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] rounded-full cursor-pointer transition duration-100 active:scale-110"
+                            style={{ backgroundColor: beige }}
+                            onClick={() => handleResetIsAttending(kid.id, true)}
+                          >
+                            <FaArrowRotateLeft
+                              className="text-blue-500"
+                              size={20}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           {/* RSVP Details */}
           <div
@@ -467,36 +491,75 @@ export const RSVPCard = ({
               </div>
             </div>
           </div>
-          <button
-            className="bg-[#f5f5dc] text-[#7b629a] montaser-arabic !font-semibold mt-8 py-2 px-8 rounded shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] hover:shadow-[2px_2px_5px_-3px_rgba(0,0,0,0.4)] transition duration-100 active:scale-110 disabled:text-gray-300 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] disabled:bg-gray-300"
-            onClick={handleSubmitRSVP}
-            // If there is null in the guest list is_attend, disable the button
-            disabled={
-              isLoading ||
-              invitationData.some(
-                (guest: any) => guest.is_attending === null
-              ) ||
-              kidsList.some((kid: any) => kid.is_attending === null)
-            }
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
-              </div>
-            ) : (
-              <span
-                style={{
-                  color: invitationData.some(
-                    (guest: any) => guest.is_attending === null
-                  )
-                    ? "#aaaaaa"
-                    : darkerLilac,
-                }}
-              >
-                Submit RSVP
+          {isDeadline ? (
+            <Tooltip title="RSVP Deadline: February 10, 2025">
+              <span>
+                {" "}
+                {/* Tooltip requires a wrapper span for disabled buttons */}
+                <button
+                  className="bg-[#f5f5dc] text-[#7b629a] montaser-arabic !font-semibold mt-8 py-2 px-8 rounded shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] hover:shadow-[2px_2px_5px_-3px_rgba(0,0,0,0.4)] transition duration-100 active:scale-110 disabled:text-gray-300 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] disabled:bg-gray-300"
+                  onClick={handleSubmitRSVP}
+                  disabled={
+                    isLoading ||
+                    invitationData.some(
+                      (guest: any) => guest.is_attending === null
+                    ) ||
+                    kidsList.some((kid: any) => kid.is_attending === null) ||
+                    isDeadline
+                  }
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+                    </div>
+                  ) : (
+                    <span
+                      style={{
+                        color: invitationData.some(
+                          (guest: any) => guest.is_attending === null
+                        )
+                          ? "#aaaaaa"
+                          : darkerLilac,
+                      }}
+                    >
+                      Submit RSVP
+                    </span>
+                  )}
+                </button>
               </span>
-            )}
-          </button>
+            </Tooltip>
+          ) : (
+            <button
+              className="bg-[#f5f5dc] text-[#7b629a] montaser-arabic !font-semibold mt-8 py-2 px-8 rounded shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] hover:shadow-[2px_2px_5px_-3px_rgba(0,0,0,0.4)] transition duration-100 active:scale-110 disabled:text-gray-300 disabled:scale-100 disabled:cursor-not-allowed disabled:shadow-[2px_2px_4px_-1px_rgba(0,0,0,0.4)] disabled:bg-gray-300"
+              onClick={handleSubmitRSVP}
+              disabled={
+                isLoading ||
+                invitationData.some(
+                  (guest: any) => guest.is_attending === null
+                ) ||
+                kidsList.some((kid: any) => kid.is_attending === null) ||
+                isDeadline
+              }
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+                </div>
+              ) : (
+                <span
+                  style={{
+                    color: invitationData.some(
+                      (guest: any) => guest.is_attending === null
+                    )
+                      ? "#aaaaaa"
+                      : darkerLilac,
+                  }}
+                >
+                  Submit RSVP
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         <div className="relative mb-32 rounded overflow-hidden"></div>

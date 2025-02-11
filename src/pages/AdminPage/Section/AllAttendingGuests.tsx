@@ -10,6 +10,7 @@ export interface GuestDataType {
   middle: string;
   lastname: string;
   status: "arrived" | "waiting" | "not-arrived";
+  is_kid: boolean;
 }
 
 const columns: TableProps<GuestDataType>["columns"] = [
@@ -63,15 +64,32 @@ export const AllAttendingGuests = ({
   tableId: number;
   onClose: (data: any) => void;
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [selectedGuestsRows, setSelectedGuestsRows] = useState<GuestDataType[]>(
+    []
+  );
+  const [selectedKidsRows, setSelectedKidsRows] = useState<GuestDataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setSelectedRowKeys([]);
   }, []);
 
-  const onSelectChange = (newSelectedRowKeys: any[]) => {
+  const onSelectChange = (
+    newSelectedRowKeys: React.Key[],
+    selectedRows: GuestDataType[]
+  ) => {
+    // Separate guests and kids
+    const guestRows = selectedRows.filter((row) => !row.is_kid);
+    const kidRows = selectedRows.filter((row) => row.is_kid);
+
+    // Update states
+    setSelectedGuestsRows(guestRows);
+    setSelectedKidsRows(kidRows);
     setSelectedRowKeys(newSelectedRowKeys);
+
+    console.log("selectedKidsRows: ", kidRows);
+    console.log("selectedGuestsRows: ", guestRows);
   };
 
   const rowSelection = {
@@ -84,8 +102,10 @@ export const AllAttendingGuests = ({
     setIsLoading(true);
     const dataToPass = {
       table_id: tableId,
-      attending_guest_ids: selectedRowKeys,
+      selectedGuests: selectedGuestsRows,
+      selectedKids: selectedKidsRows,
     };
+    console.log("dataToPass", dataToPass);
     try {
       const response = await addGuestToTable(dataToPass);
       onClose(response.table_members);

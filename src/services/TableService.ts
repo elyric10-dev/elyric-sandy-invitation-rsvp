@@ -1,3 +1,4 @@
+import { GuestDataType } from "../pages/AdminPage/Section/AllAttendingGuests";
 import { api } from "./api";
 
 interface tableDataType {
@@ -5,6 +6,16 @@ interface tableDataType {
   capacity: number;
   status: string;
 }
+
+export const exportTablesGuests = async () => {
+  try {
+    const response = await api.get("admin/seat-plan/tables-guests");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tables:", error);
+    throw error;
+  }
+};
 
 export const getAllTablesWithGuests = async () => {
   try {
@@ -17,16 +28,19 @@ export const getAllTablesWithGuests = async () => {
 };
 
 export const deleteGuestFromTable = async ({
-  attending_guest_id,
+  id_to_delete,
   table_id,
+  is_kid,
 }: {
-  attending_guest_id: number;
+  id_to_delete: number;
   table_id: number;
+  is_kid: boolean;
 }) => {
+  const data = { id_to_delete, table_id, is_kid };
   try {
     const response = await api.delete(
-      `admin/seat-plan/guests/${attending_guest_id}`,
-      { data: { table_id } }
+      `admin/seat-plan/guests/${id_to_delete}`,
+      { data }
     );
     return response.data;
   } catch (error) {
@@ -37,14 +51,17 @@ export const deleteGuestFromTable = async ({
 
 export const addGuestToTable = async ({
   table_id,
-  attending_guest_ids,
+  selectedGuests,
+  selectedKids,
 }: {
   table_id: number;
-  attending_guest_ids: number[];
+  selectedGuests: GuestDataType[];
+  selectedKids: GuestDataType[];
 }) => {
   const data = {
     table_id,
-    attending_guest_ids,
+    selectedGuests,
+    selectedKids,
   };
 
   try {

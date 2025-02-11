@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Space, Switch, Table, Tag } from "antd";
-import type { TableProps } from "antd";
+import {
+  Button,
+  Dropdown,
+  message,
+  Modal,
+  Space,
+  Switch,
+  Table,
+  Tag,
+} from "antd";
+import type { MenuProps, TableProps } from "antd";
 import { GuestDataType, TableGuests } from "./TableGuests";
 import { AllAttendingGuests } from "./AllAttendingGuests";
 import CreateTable from "./CreateTable";
 import {
   deleteTable,
+  exportTablesGuests,
   getAllTableGuests,
   getTableData,
 } from "../../../services/TableService";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { DownOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
 interface TableDataType {
   id?: number;
@@ -170,43 +180,59 @@ export const TableLists = () => {
     fetchData();
   };
 
-  return (
-    <div className="w-full flex flex-col items-center justify-center gap-4 p-4">
-      <div className="relative w-full flex items-center justify-center">
-        <div className="bg-blue-400">
+  const onClick: MenuProps["onClick"] = ({ key }) => {
+    // message.info(`Click on item ${key}`);
+  };
+
+  const items: MenuProps["items"] = [
+    {
+      label: (
+        <label className="flex items-center justify-center gap-4">
+          <p className="text-sm">{showNames ? "Hide names" : "Show names"}</p>
           <Switch
             checked={showNames}
             onChange={() => setShowNames(!showNames)}
-            className="absolute top-2 right-0 z-10"
+            className=""
             size="small"
           />
-          <p className="absolute top-8 right-0 z-10 text-sm">
-            {showNames ? "Hide names" : "Show names"}
-          </p>
-        </div>
-        <div className="flex items-center gap-48">
-          <h1 className="text-3xl font-bold">Table Lists</h1>
-          <div
-            className="p-1 rounded-full bg-gray-50 border-2 shadow-[2px_2px_5px_2px_rgba(0,0,0,0.1)] hover:shadow-[2px_2px_5px_-2px_rgba(0,0,0,0.2)] scale-100 hover:scale-125 transition duration-300 cursor-pointer"
-            onClick={() => setIsCreateTableModalOpen(true)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
+        </label>
+      ),
+      key: "1",
+    },
+    {
+      label: "Export to Sheet",
+      key: "2",
+      onClick: async () => {
+        try {
+          const response = await exportTablesGuests();
+          const url_path = response.url_path;
+
+          window.open(url_path);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    },
+  ];
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center gap-4 p-4">
+      <div className="relative w-full flex items-center justify-center">
+        <div className="flex items-center">
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold text-gray-800">Seat Plan</h2>
           </div>
         </div>
       </div>
+
+      <Dropdown menu={{ items, onClick }}>
+        <a onClick={(e) => e.preventDefault()}>
+          <Space>
+            Options
+            <DownOutlined />
+          </Space>
+        </a>
+      </Dropdown>
 
       {/* SIMPLE LIST TABLE UI */}
       {!showNames && (
@@ -241,23 +267,25 @@ export const TableLists = () => {
                     Table #{table.table_number}
                   </h1>
                   <div className="flex flex-col gap-2">
-                    {(tableGuestsData[table.id] || []).map(
-                      (guest: any, index: number) => (
+                    {tableGuestsData
+                      .find((tableGuest) => tableGuest.table_id === table.id)
+                      ?.members.map((member: any, index: number) => (
                         <div
-                          key={guest.id + index}
+                          key={`${member.id}-${
+                            member.is_kid ? "kid" : "guest"
+                          }`}
                           className="flex justify-between items-center"
                         >
                           <h3 className="courgette">{index + 1}.</h3>
                           <div className="w-full pl-2">
                             <h3 className="courgette">
-                              {guest.name} {guest.middle} {guest.lastname}
+                              {member.name} {member.middle} {member.lastname}
                             </h3>
                           </div>
-                          {status(guest.status)}
+                          {status(member.status)}
                         </div>
-                      )
-                    )}
-                    {(tableGuestsData[table.id] || []).length === 0 && (
+                      ))}
+                    {tableGuestsData[table.id]?.members.length === 0 && (
                       <div className="flex justify-center items-center">
                         <h3 className="text-center text-sm">Not added one</h3>
                       </div>

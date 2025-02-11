@@ -14,6 +14,7 @@ export interface GuestDataType {
   middle: string;
   lastname: string;
   status: "arrived" | "waiting" | "not-arrived";
+  is_kid: boolean;
 }
 
 export const TableGuests = ({
@@ -38,7 +39,16 @@ export const TableGuests = ({
     try {
       const guestsDataResponse = await getAllAttendingGuests();
 
+      console.log("guestsDataResponse: ", guestsDataResponse);
+
+      // if (guestsDataResponse.kids.length > 0) {
+      //   guestsDataResponse.kids.forEach((kid: any) => {
+      //     kid.isKid = true;
+      //   });
+      // }
+
       setAllGuestsData(guestsDataResponse.attendingGuests);
+      // console.log("allGuestsData: ", allGuestsData);
       setIsAddTableGuestModalOpen(true);
     } catch (error) {
       console.error("Error fetching guests data:", error);
@@ -46,12 +56,18 @@ export const TableGuests = ({
     setIsAddTableGuestModalOpen(true);
   };
 
-  const handleDelete = async (guestId: number) => {
+  const handleDelete = async (guestRow: GuestDataType) => {
+    console.log("guestRow: ", guestRow);
+    let guestId = guestRow.id;
+
     try {
       const response = await deleteGuestFromTable({
-        attending_guest_id: guestId,
+        id_to_delete: guestId,
         table_id: tableId,
+        is_kid: guestRow.is_kid,
       });
+
+      console.log("delete response: ", response);
 
       setGuestInTable(response.table_members);
     } catch (error) {
@@ -109,7 +125,7 @@ export const TableGuests = ({
       key: "action",
       render: (_, data) => (
         <Space size="middle">
-          <Button onClick={() => handleDelete(data.id)} type="primary">
+          <Button onClick={() => handleDelete(data)} type="primary">
             Delete
           </Button>
         </Space>
