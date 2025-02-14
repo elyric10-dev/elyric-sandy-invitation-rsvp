@@ -1,19 +1,29 @@
 import React, { useState } from "react";
-import { Input, Button, Form, Checkbox, message } from "antd";
+import { Input, Button, Form, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { login } from "../../services/AuthService";
+import { useAppDispatch } from "../../hooks/hooks";
+import { setUserData } from "../../redux/slices/userSlice";
+import { replace, useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Replace this URL with your actual login endpoint
       const response = await login(values.email, values.password);
 
-      console.log("Admin Login: ", response);
+      console.log('response: ', response);
+
+      if(response.data.token){
+        dispatch(setUserData(response.data.user));
+        navigate("/admin/dashboard", {replace: true});
+      }
     } catch (error) {
+      console.log('error: ', error);
       message.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -63,9 +73,9 @@ const AdminLogin = () => {
           </Form.Item>
 
           <div className="flex justify-between items-center">
-            <Form.Item name="remember" valuePropName="checked" noStyle>
+            {/* <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Remember me</Checkbox>
-            </Form.Item>
+            </Form.Item> */}
 
             <a
               href="/forgot-password"
@@ -86,13 +96,6 @@ const AdminLogin = () => {
             </Button>
           </Form.Item>
         </Form>
-
-        <div className="mt-6 text-center text-gray-600">
-          Need help?{" "}
-          <a href="/contact" className="text-blue-600 hover:text-blue-800">
-            Contact Support
-          </a>
-        </div>
       </div>
     </div>
   );

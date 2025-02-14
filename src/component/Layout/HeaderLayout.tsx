@@ -1,5 +1,9 @@
+import { Dropdown, Menu, MenuProps } from "antd";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { clearUserData } from "../../redux/slices/userSlice";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 
 interface MenuItem {
   menu: string;
@@ -7,21 +11,58 @@ interface MenuItem {
 }
 
 const HeaderLayout = () => {
+  const userData = useAppSelector((state) => state.user.userData);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // Logout function
+  const handleLogout = () => {
+    dispatch(clearUserData()); 
+    navigate("/admin");
+  };
 
-  const menuItems = [
-    { menu: "Dashboard", link: "/admin/dashboard" },
-    { menu: "Invitation", link: "/admin/invitation" },
-    { menu: "Guests", link: "/admin/guests" },
-    { menu: "Attendance", link: "/admin/attendance" },
-    { menu: "Seat Plan", link: "/admin/seat-plan" },
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "profile",
+      label: "Profile",
+      icon: <UserOutlined />,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "logout",
+      label: "Logout",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+      className: "text-red-600 hover:!bg-red-100",
+    },
   ];
+let navigationItems: { menu: string; link: string }[] = [];
+
+  if(userData.user_role_id === 1){
+     navigationItems = [
+      { menu: "Dashboard", link: "/admin/dashboard" },
+      { menu: "Invitation", link: "/admin/invitation" },
+      { menu: "Guests", link: "/admin/guests" },
+      { menu: "Attendance", link: "/admin/attendance" },
+      { menu: "Seat Plan", link: "/admin/seat-plan" },
+    ];
+  }
+  if(userData.user_role_id === 2){
+     navigationItems = [
+      { menu: "Dashboard", link: "/admin/dashboard" },
+      { menu: "Guests", link: "/admin/guests" },
+      { menu: "Seat Plan", link: "/admin/seat-plan" },
+    ];
+  
+  }
 
   // Find active tab based on current path
   const activeTab =
-    menuItems.find((item) =>
+    navigationItems.find((item) =>
       currentPath.includes(item.link.split("/").pop() || "")
     )?.menu || "Dashboard";
 
@@ -33,13 +74,13 @@ const HeaderLayout = () => {
           <div className="h-10 w-10 rounded-full bg-[#C8a2c8] flex items-center justify-center">
             <span className="text-white font-bold">ES</span>
           </div>
-          <span className="ml-2 text-xl font-semibold">Event Service</span>
+          {/* <span className="ml-2 text-xl font-semibold">Event Service</span> */}
         </div>
 
         {/* Navigation Menu */}
         <nav className="flex-1 flex justify-center items-center">
           <ul className="flex space-x-2">
-            {menuItems.map((item) => (
+            {navigationItems.map((item) => (
               <li key={item.menu}>
                 <button
                   onClick={() => navigate(item.link)}
@@ -58,15 +99,17 @@ const HeaderLayout = () => {
         </nav>
 
         {/* Right Section */}
-        <div className="flex items-center space-x-4">
-          <div className="h-8 w-8 border border-violet-700 rounded-full bg-gray-200 overflow-hidden">
-            <img
-              src="/api/placeholder/32/32"
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          </div>
+        <Dropdown menu={{items: menuItems}} trigger={["click"]}>
+      <div className="flex items-center space-x-4 cursor-pointer">
+        <div className="h-8 w-8 border border-violet-700 rounded-full bg-gray-200 overflow-hidden">
+          <img
+            src="/api/placeholder/32/32"
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
         </div>
+      </div>
+    </Dropdown>
       </div>
     </header>
   );
